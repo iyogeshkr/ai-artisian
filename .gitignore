@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+.venv/
+env/
+
+# Hugging Face cache / models
+.cache/
+models/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+frontend/.env
+functions/.secret.local
+
+# Node
+node_modules/
+frontend/node_modules/
+functions/node_modules/
+
+# Build output
+dist/
+frontend/dist/
+
+# Generated test images (do not commit)
+ai-server/generated.png
+ai-server/output.png

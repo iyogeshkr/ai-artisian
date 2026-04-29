@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+diffusers
+transformers
+accelerate
+torch
+pillow
+python-dotenv
+requests
+sentencepiece
+protobuf
