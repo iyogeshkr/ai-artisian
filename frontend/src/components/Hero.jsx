@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Globe, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
-import heroImage from "../../assets/hero.png";
+import heroImage from "../../assets/hero.webp";
 
 const Hero = () => {
   return (
