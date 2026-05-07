@@ -64,7 +64,7 @@ const Features = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-muted-foreground"
           >
-            Create designs, list products, launch your store to sell your products globally within minutes.
+            Create designs, list products, setup store within minutes to sell your products globally.
           </motion.p>
         </div>
 

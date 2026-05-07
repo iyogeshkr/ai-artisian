@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+﻿import { Navigate } from "react-router-dom";
 import OnboardingWizard from "@/components/artisan/OnboardingWizard";
 import { useArtisan } from "@/context/ArtisanContext";
 
@@ -6,7 +6,7 @@ export default function OnboardPage() {
   const { isOnboarded, updateProfile } = useArtisan();
 
   if (isOnboarded) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/artisan/dashboard" replace />;
   }
 
   return (
@@ -15,3 +15,4 @@ export default function OnboardPage() {
     </div>
   );
 }
+

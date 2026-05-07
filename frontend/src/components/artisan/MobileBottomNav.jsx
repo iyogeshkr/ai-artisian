@@ -1,8 +1,8 @@
-import { Home, Lightbulb, Package2, Sparkles } from "lucide-react";
+﻿import { Home, Lightbulb, Package2, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const items = [
-  { icon: Home, label: "Home", to: "/dashboard" },
+  { icon: Home, label: "Home", to: "/artisan/dashboard" },
   { icon: Sparkles, label: "Design", to: "/design" },
   { icon: Package2, label: "Products", to: "/products" },
   { icon: Lightbulb, label: "Learn", to: "/learn" },
@@ -35,3 +35,4 @@ export default function MobileBottomNav() {
     </nav>
   );
 }
+

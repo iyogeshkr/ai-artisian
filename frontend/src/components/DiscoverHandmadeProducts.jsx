@@ -10,16 +10,14 @@ const DiscoverHandmadeProducts = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   // Get unique categories from products and filter to meaningful ones
-  const displayCategories = ["All", "Textiles", "Pottery", "Home Decor", "Fashion", "Jewellery"];
+  const displayCategories = ["All", "Madhubani", "Textiles", "Pottery", "Home Decor", "Fashion", "Jewellery", "Craft"];
 
   // Filter products based on selected category
   const filteredProducts = useMemo(() => {
     if (selectedCategory === "All") {
-      return ALL_PRODUCTS.slice(0, 6); // Show first 6 products for mini version
+      return ALL_PRODUCTS.slice(0, 12); // show more products for compact grid
     }
-    return ALL_PRODUCTS.filter(
-      (product) => product.category === selectedCategory
-    ).slice(0, 6);
+    return ALL_PRODUCTS.filter((product) => product.category === selectedCategory).slice(0, 12);
   }, [selectedCategory]);
 
   const containerVariants = {
@@ -67,35 +65,41 @@ const DiscoverHandmadeProducts = () => {
         </div>
 
         {/* Category Filters */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex flex-wrap justify-center gap-2 mb-12"
+          className="mb-6"
         >
-          {displayCategories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-full font-medium transition-all ${
-                selectedCategory === category
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              }`}
-            >
-              {category}
-            </button>
-          ))}
+          <div className="sticky top-16 z-20 bg-white/60 backdrop-blur-sm -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3">
+            <div className="overflow-x-auto no-scrollbar">
+              <div className="inline-flex items-center space-x-2">
+                {displayCategories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`inline-block whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                      selectedCategory === category
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80"
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </motion.div>
 
         {/* Product Grid */}
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8"
         >
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product, index) => (

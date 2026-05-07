@@ -1,15 +1,12 @@
-import React, { useState } from "react";
+﻿import React from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
-import AuthModal from "@/components/AuthModal";
 import { Link } from "react-router-dom";
 
 const CallToAction = () => {
   const { user } = useAuth();
-  const [authOpen, setAuthOpen] = useState(false);
-  const openAuthModal = () => setAuthOpen(true);
 
   return (
     <section className="py-20">
@@ -32,13 +29,15 @@ const CallToAction = () => {
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               {user ? (
                 <Button size="lg" className="bg-white text-primary hover:bg-white/90 group" asChild>
-                  <Link to="/onboard">
+                  <Link to="/artisan/onboarding">
                     Start Selling <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </Button>
               ) : (
-                <Button size="lg" className="bg-white text-primary hover:bg-white/90 group" onClick={openAuthModal}>
-                  Get Started for Free <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <Button size="lg" className="bg-white text-primary hover:bg-white/90 group" asChild>
+                  <Link to="/signup?role=artisan">
+                    Get Started for Free <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
                 </Button>
               )}
               <Button size="lg" className="border-2 border-white bg-white/20 text-white hover:bg-white/30 font-semibold" asChild>
@@ -48,9 +47,9 @@ const CallToAction = () => {
           </div>
         </motion.div>
       </div>
-      <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
     </section>
   );
 };
 
 export default CallToAction;
+

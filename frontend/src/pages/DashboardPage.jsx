@@ -1,4 +1,4 @@
-import { Lightbulb, Package2, Share2, Sparkles, Store, Wand2 } from "lucide-react";
+﻿import { Lightbulb, Package2, Share2, Sparkles, Store, Wand2 } from "lucide-react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import MobileBottomNav from "@/components/artisan/MobileBottomNav";
 import { Button } from "@/components/ui/button";
@@ -14,12 +14,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (profile) {
-      pingAnalytics("/dashboard", profile.phone);
+      pingAnalytics("/artisan/dashboard", profile.phone);
     }
   }, [profile]);
 
   if (!isOnboarded) {
-    return <Navigate to="/onboard" replace />;
+    return <Navigate to="/artisan/onboarding" replace />;
   }
 
   const storefrontUrl = `${window.location.origin}/store/${profile.storefrontId}`;
@@ -91,7 +91,7 @@ export default function DashboardPage() {
             </div>
             <h2 className="text-xl font-semibold">Generate New Design</h2>
             <p className="mt-2 text-base text-muted-foreground">
-              Craft, style और color palette से 3 new concepts बनाइए।
+              Craft, style à¤”à¤° color palette à¤¸à¥‡ 3 new concepts à¤¬à¤¨à¤¾à¤‡à¤à¥¤
             </p>
           </button>
           <button
@@ -104,7 +104,7 @@ export default function DashboardPage() {
             </div>
             <h2 className="text-xl font-semibold">My Products</h2>
             <p className="mt-2 text-base text-muted-foreground">
-              अपने listings देखें, नए products जोड़ें, और share करें।
+              à¤…à¤ªà¤¨à¥‡ listings à¤¦à¥‡à¤–à¥‡à¤‚, à¤¨à¤ products à¤œà¥‹à¤¡à¤¼à¥‡à¤‚, à¤”à¤° share à¤•à¤°à¥‡à¤‚à¥¤
             </p>
           </button>
           <button
@@ -117,7 +117,7 @@ export default function DashboardPage() {
             </div>
             <h2 className="text-xl font-semibold">Learn & Earn</h2>
             <p className="mt-2 text-base text-muted-foreground">
-              Pricing, eco packaging, WhatsApp और Instagram के micro-lessons.
+              Pricing, eco packaging, WhatsApp à¤”à¤° Instagram à¤•à¥‡ micro-lessons.
             </p>
           </button>
         </div>
@@ -128,18 +128,18 @@ export default function DashboardPage() {
               <Sparkles className="h-4 w-4" />
               Quick Start
             </p>
-            <h2 className="mt-3 text-3xl font-bold">आज क्या करना है?</h2>
+            <h2 className="mt-3 text-3xl font-bold">à¤†à¤œ à¤•à¥à¤¯à¤¾ à¤•à¤°à¤¨à¤¾ à¤¹à¥ˆ?</h2>
             <div className="mt-5 space-y-3 text-base text-muted-foreground">
-              <p>1. नई design generate करें</p>
-              <p>2. कम से कम 1 product add करें</p>
-              <p>3. Learn section में pricing card पढ़ें</p>
+              <p>1. à¤¨à¤ˆ design generate à¤•à¤°à¥‡à¤‚</p>
+              <p>2. à¤•à¤® à¤¸à¥‡ à¤•à¤® 1 product add à¤•à¤°à¥‡à¤‚</p>
+              <p>3. Learn section à¤®à¥‡à¤‚ pricing card à¤ªà¤¢à¤¼à¥‡à¤‚</p>
             </div>
           </div>
           <div className="rounded-[2rem] border bg-card p-6 shadow-sm">
             <p className="text-base text-muted-foreground">Next action</p>
             <h3 className="mt-2 text-2xl font-semibold">AI-assisted product listing</h3>
             <p className="mt-3 text-base text-muted-foreground">
-              पहले design बनाइए, फिर उसी image को अपने product card में इस्तेमाल कीजिए।
+              à¤ªà¤¹à¤²à¥‡ design à¤¬à¤¨à¤¾à¤‡à¤, à¤«à¤¿à¤° à¤‰à¤¸à¥€ image à¤•à¥‹ à¤…à¤ªà¤¨à¥‡ product card à¤®à¥‡à¤‚ à¤‡à¤¸à¥à¤¤à¥‡à¤®à¤¾à¤² à¤•à¥€à¤œà¤¿à¤à¥¤
             </p>
             <Button type="button" className="mt-5" onClick={() => navigate("/design")}>
               Start Designing
@@ -149,7 +149,7 @@ export default function DashboardPage() {
 
         <div className="mt-6 hidden justify-center md:flex">
           <div className="inline-flex rounded-full border bg-white p-2 shadow-sm">
-            <Link className="rounded-full bg-primary px-4 py-2 text-base font-medium text-primary-foreground" to="/dashboard">
+            <Link className="rounded-full bg-primary px-4 py-2 text-base font-medium text-primary-foreground" to="/artisan/dashboard">
               Home
             </Link>
             <Link className="rounded-full px-4 py-2 text-base font-medium text-muted-foreground" to="/design">
@@ -168,3 +168,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+

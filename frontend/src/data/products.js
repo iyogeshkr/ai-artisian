@@ -1,6 +1,8 @@
-export const ALL_PRODUCTS = [
+﻿export const ALL_PRODUCTS = [
   {
     id: 1,
+    artisan_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    artisan_name: "Sushila Devi",
     name: "Madhubani Art Frame",
     category: "Home Decor",
     price: "Rs. 1,850",
@@ -23,6 +25,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 2,
+    artisan_id: "b1c2d3e4-f5a6-7890-bcde-f12345678901",
+    artisan_name: "Ramesh Bhoye",
     name: "Warli Painting",
     category: "Home Decor",
     price: "Rs. 2,400",
@@ -45,6 +49,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 3,
+    artisan_id: "c1d2e3f4-a5b6-7890-cdef-123456789012",
+    artisan_name: "Birsa Murmu",
     name: "Dhokra Metal Figurine",
     category: "Home Decor",
     price: "Rs. 3,200",
@@ -67,6 +73,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 4,
+    artisan_id: "d1e2f3a4-b5c6-7890-def1-234567890123",
+    artisan_name: "Pooja Sharma",
     name: "Block Print Stole",
     category: "Fashion",
     price: "Rs. 950",
@@ -89,6 +97,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 5,
+    artisan_id: "e1f2a3b4-c5d6-7890-ef12-345678901234",
+    artisan_name: "Neha Rabari",
     name: "Bandhani Dupatta",
     category: "Fashion",
     price: "Rs. 1,250",
@@ -111,6 +121,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 6,
+    artisan_id: "f1a2b3c4-d5e6-7890-f123-456789012345",
+    artisan_name: "Harpreet Kaur",
     name: "Phulkari Embroidered Kurta",
     category: "Fashion",
     price: "Rs. 2,850",
@@ -133,6 +145,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 7,
+    artisan_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567891",
+    artisan_name: "Meena Ben",
     name: "Kutch Tote Bag",
     category: "Accessories",
     price: "Rs. 1,450",
@@ -155,6 +169,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 8,
+    artisan_id: "b1c2d3e4-f5a6-7890-bcde-f12345678902",
+    artisan_name: "Naseem Khan",
     name: "Leather Mojari",
     category: "Accessories",
     price: "Rs. 1,100",
@@ -177,6 +193,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 9,
+    artisan_id: "c1d2e3f4-a5b6-7890-cdef-123456789013",
+    artisan_name: "Anjali Bora",
     name: "Bamboo Sling Bag",
     category: "Accessories",
     price: "Rs. 850",
@@ -199,6 +217,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 10,
+    artisan_id: "d1e2f3a4-b5c6-7890-def1-234567890124",
+    artisan_name: "Rajesh Kumar",
     name: "Blue Pottery Vase",
     category: "Pottery",
     price: "Rs. 2,200",
@@ -221,6 +241,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 11,
+    artisan_id: "e1f2a3b4-c5d6-7890-ef12-345678901235",
+    artisan_name: "Gopal Sahu",
     name: "Terracotta Planter Set",
     category: "Pottery",
     price: "Rs. 780",
@@ -243,6 +265,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 12,
+    artisan_id: "f1a2b3c4-d5e6-7890-f123-456789012346",
+    artisan_name: "Arif Ali",
     name: "Khurja Ceramic Bowl",
     category: "Pottery",
     price: "Rs. 650",
@@ -265,6 +289,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 13,
+    artisan_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567892",
+    artisan_name: "Lakshmi Rao",
     name: "Ikat Table Runner",
     category: "Textiles",
     price: "Rs. 1,050",
@@ -287,6 +313,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 14,
+    artisan_id: "b1c2d3e4-f5a6-7890-bcde-f12345678903",
+    artisan_name: "Bhavna Patel",
     name: "Patola Silk Cushion Cover",
     category: "Textiles",
     price: "Rs. 1,650",
@@ -309,6 +337,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 15,
+    artisan_id: "c1d2e3f4-a5b6-7890-cdef-123456789014",
+    artisan_name: "Mousumi Das",
     name: "Kantha Quilt",
     category: "Textiles",
     price: "Rs. 4,400",
@@ -331,6 +361,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 16,
+    artisan_id: "d1e2f3a4-b5c6-7890-def1-234567890125",
+    artisan_name: "Sonal Jain",
     name: "Oxidised Silver Jhumkas",
     category: "Jewellery",
     price: "Rs. 450",
@@ -353,6 +385,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 17,
+    artisan_id: "e1f2a3b4-c5d6-7890-ef12-345678901236",
+    artisan_name: "Farah Ansari",
     name: "Meenakari Bangles",
     category: "Jewellery",
     price: "Rs. 1,350",
@@ -375,6 +409,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 18,
+    artisan_id: "f1a2b3c4-d5e6-7890-f123-456789012347",
+    artisan_name: "Aditi Rathore",
     name: "Kundan Necklace",
     category: "Jewellery",
     price: "Rs. 8,500",
@@ -397,6 +433,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 19,
+    artisan_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567893",
+    artisan_name: "Imran Qureshi",
     name: "Sheesham Wood Tray",
     category: "Woodwork",
     price: "Rs. 1,200",
@@ -419,6 +457,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 20,
+    artisan_id: "b1c2d3e4-f5a6-7890-bcde-f12345678904",
+    artisan_name: "Vijay Rao",
     name: "Channapatna Toy Set",
     category: "Woodwork",
     price: "Rs. 980",
@@ -441,6 +481,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 21,
+    artisan_id: "c1d2e3f4-a5b6-7890-cdef-123456789015",
+    artisan_name: "Shivam Das",
     name: "Rosewood Coasters",
     category: "Woodwork",
     price: "Rs. 620",
@@ -463,6 +505,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 22,
+    artisan_id: "d1e2f3a4-b5c6-7890-def1-234567890126",
+    artisan_name: "Prakash Joshi",
     name: "Brass Diya Set",
     category: "Lighting",
     price: "Rs. 1,100",
@@ -485,6 +529,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 23,
+    artisan_id: "e1f2a3b4-c5d6-7890-ef12-345678901237",
+    artisan_name: "Aamir Sheikh",
     name: "Jali Cut Lamp",
     category: "Lighting",
     price: "Rs. 2,950",
@@ -507,6 +553,8 @@ export const ALL_PRODUCTS = [
   },
   {
     id: 24,
+    artisan_id: "f1a2b3c4-d5e6-7890-f123-456789012348",
+    artisan_name: "Yusuf Dar",
     name: "Papier-mache Lantern",
     category: "Lighting",
     price: "Rs. 1,780",
@@ -526,7 +574,7 @@ export const ALL_PRODUCTS = [
     freeDelivery: true,
     inStock: true,
     tags: ["handmade", "eco-friendly", "GI-tagged"],
-  },
+  }
 ];
 
 export const CATEGORIES = [

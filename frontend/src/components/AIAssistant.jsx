@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,7 @@ const AIAssistant = ({ embedded = false }) => {
 
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <Button size="lg" className="w-full sm:w-auto" asChild>
-                <Link to="/dashboard">
+                <Link to="/artisan/dashboard">
                   Try AI Design (Register as artisan)
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -62,3 +62,4 @@ const AIAssistant = ({ embedded = false }) => {
 };
 
 export default AIAssistant;
+

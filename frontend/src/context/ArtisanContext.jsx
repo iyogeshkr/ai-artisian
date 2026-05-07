@@ -59,7 +59,7 @@ export function ArtisanProvider({ children }) {
   const { user } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const isOnboarded = Boolean(profile?.phone && profile?.name);
+  const isOnboarded = profile?.store_setup === true;
 
   useEffect(() => {
     let isMounted = true;

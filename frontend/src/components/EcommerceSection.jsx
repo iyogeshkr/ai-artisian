@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ShoppingBag, Globe, TrendingUp, CreditCard } from "lucide-react";
@@ -8,23 +8,23 @@ const EcommerceSection = () => {
   const ecommerceFeatures = [
     {
       icon: <Globe className="h-6 w-6 text-primary" />,
-      title: "Global Reach",
-      description: "Sell your handmade products to customers worldwide with integrated shipping solutions."
+      title: "AI Design Assistant",
+      description: "Create modern designs inspired by your tradition — in seconds, not weeks."
     },
     {
       icon: <CreditCard className="h-6 w-6 text-primary" />,
-      title: "Secure Payments",
-      description: "Accept payments in multiple currencies with secure payment processing."
-    },
-    {
-      icon: <TrendingUp className="h-6 w-6 text-primary" />,
-      title: "Market Insights",
-      description: "Get data on trending products and customer preferences to boost your sales."
+      title: "Instant store setup",
+      description: "Setup store in minutes — no technical skills needed."
     },
     {
       icon: <ShoppingBag className="h-6 w-6 text-primary" />,
-      title: "Inventory Management",
-      description: "Easily manage your product inventory and track orders in real-time."
+      title: "Integrated Marketplace",
+      description: "Sell your products anywhere — no middlemen."
+    },
+    {
+      icon: <TrendingUp className="h-6 w-6 text-primary" />,
+      title: "Trends & Insights",
+      description: "Track insights on what customers want."
     }
   ];
 
@@ -39,20 +39,62 @@ const EcommerceSection = () => {
             transition={{ duration: 0.6 }}
             className="order-2 lg:order-1"
           >
-            <div className="relative rounded-xl overflow-hidden shadow-xl animated-border">
-              <img  alt="Indian artisan selling handmade products online" className="w-full h-auto" src="https://images.unsplash.com/photo-1680188700662-5b03bdcf3017" />
-              
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
-                <div className="flex items-center space-x-3">
-                  <div className="bg-white rounded-full p-2">
-                    <ShoppingBag className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-white font-medium">E-commerce Integration</p>
-                    <p className="text-white/80 text-sm">Sell your crafts globally</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
+              {/* Left Image - Full Height */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="relative rounded-xl overflow-hidden shadow-xl animated-border md:row-span-2"
+              >
+                <img
+                  alt="Indian artisan crafting handmade products"
+                  className="w-full h-full object-cover"
+                  src="https://images.unsplash.com/photo-1680188700662-5b03bdcf3017"
+                />
+              </motion.div>
+
+              {/* Top Right Image */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="relative rounded-xl overflow-hidden shadow-xl animated-border"
+              >
+                <img
+                  alt="AI design tools for artisans"
+                  className="w-full h-full object-cover"
+                  src="https://images.unsplash.com/photo-1561070791-2526d30994b5"
+                />
+              </motion.div>
+
+              {/* Bottom Right Image */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="relative rounded-xl overflow-hidden shadow-xl animated-border"
+              >
+                <img
+                  alt="E-commerce marketplace for handmade products"
+                  className="w-full h-full object-cover"
+                  src="https://images.unsplash.com/photo-1516321318423-f06f70a504f9"
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-white rounded-full p-2">
+                      <ShoppingBag className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-white font-medium text-sm">E-commerce Integration</p>
+                      <p className="text-white/80 text-xs">Sell your crafts globally</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </motion.div>
           
@@ -64,16 +106,16 @@ const EcommerceSection = () => {
             className="order-1 lg:order-2"
           >
             <div className="inline-flex items-center px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-4">
-              <ShoppingBag className="h-4 w-4 mr-2" />
-              E-commerce Integration
+              {/* <ShoppingBag className="h-4 w-4 mr-2" /> */}
+              Where Tradition meets Innovation
             </div>
             
             <h2 className="text-3xl font-bold mb-6">
-              Take Your Crafts to the <span className="gradient-text">Global Market</span>
+              Why <span className="gradient-text">AI Artisan ?</span>
             </h2>
             
             <p className="text-muted-foreground mb-8">
-              Our platform helps you list and sell your handmade products to customers worldwide. With integrated payment processing, shipping solutions, and marketing tools, you can focus on what you do best - creating beautiful crafts.
+              AI Artisan helps you craft your traditional product with modern AI-Powered designs, setup store, sell customers worldwide.
             </p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
@@ -98,7 +140,7 @@ const EcommerceSection = () => {
             </div>
             
             <Button size="lg" className="group" asChild>
-              <Link to="/onboard">Start Selling <ShoppingBag className="ml-2 h-4 w-4" /></Link>
+              <Link to="/artisan/onboarding">Start Selling <ShoppingBag className="ml-2 h-4 w-4" /></Link>
             </Button>
           </motion.div>
         </div>

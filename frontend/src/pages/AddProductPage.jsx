@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,7 @@ export default function AddProductPage() {
   const [error, setError] = useState("");
 
   if (!isOnboarded) {
-    return <Navigate to="/onboard" replace />;
+    return <Navigate to="/artisan/onboarding" replace />;
   }
 
   const updateField = (field, value) => {
@@ -76,14 +76,14 @@ export default function AddProductPage() {
       <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
         <div className="rounded-[2rem] border bg-card p-6 shadow-sm">
           <h1 className="text-4xl font-bold">Add Product</h1>
-          <p className="mt-2 text-base text-muted-foreground">अपना product storefront में जोड़ें</p>
+          <p className="mt-2 text-base text-muted-foreground">à¤…à¤ªà¤¨à¤¾ product storefront à¤®à¥‡à¤‚ à¤œà¥‹à¤¡à¤¼à¥‡à¤‚</p>
           <div className="mt-6 grid gap-4">
             <div>
               <label className="mb-2 block text-base font-medium">Product name</label>
               <Input value={form.name} onChange={(event) => updateField("name", event.target.value)} />
             </div>
             <div>
-              <label className="mb-2 block text-base font-medium">Price (₹)</label>
+              <label className="mb-2 block text-base font-medium">Price (â‚¹)</label>
               <Input type="number" value={form.price} onChange={(event) => updateField("price", event.target.value)} />
             </div>
             <div>
@@ -113,3 +113,4 @@ export default function AddProductPage() {
     </div>
   );
 }
+

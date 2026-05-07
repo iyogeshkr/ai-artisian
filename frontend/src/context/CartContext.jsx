@@ -11,7 +11,13 @@ export function CartProvider({ children }) {
     setItems(prev => {
       const existing = prev.find(i => i.id === product.id);
       if (existing) return prev.map(i => i.id === product.id ? { ...i, qty: i.qty + 1 } : i);
-      return [...prev, { ...product, qty: 1 }];
+      return [...prev, { 
+        ...product, 
+        qty: 1,
+        artisan_id: product.artisan_id,
+        artisan_name: product.artisan_name || product.artisan,
+        phone: product.phone
+      }];
     });
     setIsOpen(true);
   };

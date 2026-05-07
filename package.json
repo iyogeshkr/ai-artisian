@@ -10,5 +10,7 @@
     "lint": "npm --prefix frontend run lint",
     "deploy": "echo Deploy frontend to Vercel or Netlify and Supabase Edge Functions separately"
   },
-  "dependencies": {}
+  "devDependencies": {
+    "supabase": "^2.95.6"
+  }
 }

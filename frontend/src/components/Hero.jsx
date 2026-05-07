@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Globe, ShoppingBag } from "lucide-react";
@@ -21,23 +21,23 @@ const Hero = () => {
               Empowering Indian Artisans with AI
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
               Blending Tradition with <span className="gradient-text">Innovation</span>
             </h1>
 
             <p className="text-lg text-muted-foreground max-w-xl">
-              AI Artisan gives India's 200 million artisans the tools to design for the world, sell without middlemen, and build a business that lasts — without losing what makes their work sacred.
+              Empowering Indian artisans to create modern designs and sell globally — without losing their tradition.
             </p>
 
-            <div className="flex flex-wrap gap-4 pt-2">
-              <Button size="lg" className="group" asChild>
-                <Link to="/onboard">
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <Button size="lg" className="group w-full sm:w-auto min-h-[48px]" asChild>
+                <Link to="/artisan/onboarding">
                   Start Selling
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link to="/e-commerce">Explore Marketplace</Link>
+              <Button size="lg" variant="outline" className="w-full sm:w-auto min-h-[48px]" asChild>
+                <Link to="/e-commerce">Explore Products</Link>
               </Button>
             </div>
 
@@ -92,3 +92,4 @@ const Hero = () => {
 };
 
 export default Hero;
+

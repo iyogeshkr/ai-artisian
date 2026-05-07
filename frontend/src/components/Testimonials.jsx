@@ -5,34 +5,34 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const testimonials = [
   {
+    name: "Sushila Devi",
+    location: "Madhubani",
+    craft: "Mithila Painting",
+    quote: "AI Artisan helped me create modern variations of my Madhubani designs. sales increased by 100%.",
+    rating: 5,
+    initials: "SD"
+  },
+  {
     name: "Rajesh Kumar",
-    location: "Jaipur, Rajasthan",
-    craft: "Blue Pottery",
-    quote: "AI Artisan helped me blend traditional blue pottery techniques with modern designs. My sales have increased by 40% since I started using the platform.",
+    location: "Kutch, Gujarat",
+    craft: "Embroidery",
+    quote: "I never thought I could sell my embroidery work online. With AI Artisan, it feels simple and accessible.",
+    rating: 4,
+    initials: "RK"
+  },
+  {
+    name: "Rupa Kumari",
+    location: "Darbhanga, Bihar",
+    craft: "Sikki Craft",
+    quote: "AI Artisan showed me new design ideas for Sikki craft. I feel more confident creating products.",
     rating: 5,
     initials: "RK"
   },
   {
-    name: "Meena Devi",
-    location: "Kutch, Gujarat",
-    craft: "Embroidery",
-    quote: "The multilingual support made it easy for me to use the platform in Gujarati. I can now sell my embroidery work to customers around the world.",
-    rating: 5,
-    initials: "MD"
-  },
-  {
-    name: "Anand Sharma",
-    location: "Moradabad, UP",
-    craft: "Brass Work",
-    quote: "The eco-friendly guidance helped me switch to sustainable materials without compromising on quality. My customers appreciate the environmental consciousness.",
-    rating: 4,
-    initials: "AS"
-  },
-  {
     name: "Lakshmi Rao",
-    location: "Pochampally, Telangana",
+    location: "Telangana",
     craft: "Ikat Weaving",
-    quote: "The AI design assistant gave me fresh ideas for my Ikat patterns while preserving the traditional techniques. It's the perfect blend of innovation and tradition.",
+    quote: "The AI design assistant gave me fresh ideas for my Ikat patterns while preserving the traditional techniques.",
     rating: 5,
     initials: "LR"
   }
@@ -53,7 +53,7 @@ const Testimonials = () => {
             Trusted by <span className="gradient-text">Artisans</span> Across India
           </h2>
           <p className="text-muted-foreground">
-            Hear from artisans who have transformed their craft businesses using AI Artisan.
+            Hear from artisans who have transformed their craft (Early pilot feedback).
           </p>
         </motion.div>
 

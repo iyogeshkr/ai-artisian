@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Menu, X, ShoppingBag, User, LogOut, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
-import AuthModal from "@/components/AuthModal";
-
 function useHashNav() {
   const navigate = useNavigate();
   return (href, closeFn) => {
@@ -28,19 +26,30 @@ function useHashNav() {
 const navItems = [
   { name: "Home", href: "/" },
   { name: "Marketplace", href: "/e-commerce" },
-  { name: "AI Design", href: "/design" },
-  { name: "For Artisans", href: "/onboard" },
-  { name: "Learn", href: "/learn" },
+  { name: "About", href: "/about" },
+  // { name: "AI Design", href: "/design" },
+  { name: "For Artisans", href: "/signup?role=artisan" },
+  // { name: "Learn", href: "/learn" },
 ];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [authOpen, setAuthOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   const { count, setIsOpen: openCart } = useCart();
   const goTo = useHashNav();
   const close = () => setIsOpen(false);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handler = (e) => {
+      if (isOpen && !e.target.closest('nav')) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, [isOpen]);
 
   const handleLogout = () => {
     logout();
@@ -119,8 +128,8 @@ export default function Navbar() {
                   )}
                 </div>
               ) : (
-                <Button className="hidden md:flex" size="sm" onClick={() => setAuthOpen(true)}>
-                  <User className="h-4 w-4 mr-1" />Login / Sign Up
+                <Button className="hidden md:flex" size="sm" onClick={() => goTo("/login")}>
+                  <User className="h-4 w-4 mr-1" />Login
                 </Button>
               )}
 
@@ -137,7 +146,7 @@ export default function Navbar() {
           <div className="px-4 pt-2 pb-4 space-y-1 bg-background/95 backdrop-blur-md border-t">
             {navItems.map(item => (
               <button key={item.name} onClick={() => goTo(item.href, close)}
-                className="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:text-primary hover:bg-muted transition-colors bg-transparent border-none cursor-pointer">
+                className="block w-full text-left px-3 py-3 rounded-md text-base font-medium hover:text-primary hover:bg-muted transition-colors bg-transparent border-none cursor-pointer min-h-[48px] flex items-center">
                 {item.name}
               </button>
             ))}
@@ -146,22 +155,20 @@ export default function Navbar() {
                 <p className="px-3 py-1 text-sm font-medium">{user.name}</p>
                 <p className="px-3 text-xs text-muted-foreground mb-2">{user.email}</p>
                 <button onClick={() => { handleLogout(); close(); }}
-                  className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-sm text-destructive hover:bg-muted transition-colors bg-transparent border-none cursor-pointer">
+                  className="flex items-center gap-2 w-full px-3 py-3 rounded-md text-sm text-destructive hover:bg-muted transition-colors bg-transparent border-none cursor-pointer min-h-[48px]">
                   <LogOut className="h-4 w-4" />Logout
                 </button>
               </div>
             ) : (
               <div className="pt-2">
-                <Button className="w-full" onClick={() => { setAuthOpen(true); close(); }}>
+                <Button className="w-full min-h-[48px]" onClick={() => { goTo("/login", close); }}>
                   Login / Sign Up
                 </Button>
               </div>
             )}
           </div>
         </div>
-      </nav>
-
-      <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
-    </>
+      </nav></>
   );
 }
+

@@ -6,7 +6,7 @@ import HowItWorks from "@/components/HowItWorks";
 import AIAssistant from "@/components/AIAssistant";
 import DiscoverHandmadeProducts from "@/components/DiscoverHandmadeProducts";
 import EcommerceSection from "@/components/EcommerceSection";
-import EcoFriendly from "@/components/EcoFriendly";
+// import EcoFriendly from "@/components/EcoFriendly";
 import Testimonials from "@/components/Testimonials";
 import CallToAction from "@/components/CallToAction";
 
@@ -16,11 +16,11 @@ const HomePage = () => {
             <Hero />
             <ProblemFaced />
             <Features />
-            <HowItWorks />
             <AIAssistant />
+            <HowItWorks />
             <DiscoverHandmadeProducts />
             <EcommerceSection />
-            <EcoFriendly />
+            {/* <EcoFriendly /> */}
             <Testimonials />
             <CallToAction />
         </>

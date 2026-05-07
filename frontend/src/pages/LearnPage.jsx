@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+﻿import { Navigate } from "react-router-dom";
 import LearningCarousel from "@/components/artisan/LearningCarousel";
 import MobileBottomNav from "@/components/artisan/MobileBottomNav";
 import { useArtisan } from "@/context/ArtisanContext";
@@ -15,7 +15,7 @@ export default function LearnPage() {
   }, [profile]);
 
   if (!isOnboarded) {
-    return <Navigate to="/onboard" replace />;
+    return <Navigate to="/artisan/onboarding" replace />;
   }
 
   return (
@@ -27,3 +27,4 @@ export default function LearnPage() {
     </div>
   );
 }
+

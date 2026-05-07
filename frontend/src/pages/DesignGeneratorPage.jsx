@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Palette, RefreshCw, Share2 } from "lucide-react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import MobileBottomNav from "@/components/artisan/MobileBottomNav";
@@ -65,7 +65,7 @@ export default function DesignGeneratorPage() {
   }, [retryCountdown]);
 
   if (!isOnboarded) {
-    return <Navigate to="/onboard" replace />;
+    return <Navigate to="/artisan/onboarding" replace />;
   }
 
   const canGoNext =
@@ -104,7 +104,7 @@ export default function DesignGeneratorPage() {
       setCurrentDesignBatch(designs);
 
       if (result.hasPartialFailure) {
-        setError("कुछ designs नहीं बन सकीं, लेकिन जो बन गई हैं उन्हें आप अभी use कर सकते हैं।");
+        setError("à¤•à¥à¤› designs à¤¨à¤¹à¥€à¤‚ à¤¬à¤¨ à¤¸à¤•à¥€à¤‚, à¤²à¥‡à¤•à¤¿à¤¨ à¤œà¥‹ à¤¬à¤¨ à¤—à¤ˆ à¤¹à¥ˆà¤‚ à¤‰à¤¨à¥à¤¹à¥‡à¤‚ à¤†à¤ª à¤…à¤­à¥€ use à¤•à¤° à¤¸à¤•à¤¤à¥‡ à¤¹à¥ˆà¤‚à¥¤");
       }
     } catch (generationError) {
       if (generationError.status === 503 && allowRetry && !hasRetried503) {
@@ -266,7 +266,7 @@ export default function DesignGeneratorPage() {
         <section className="mt-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-2xl font-bold">Results</h2>
-            <Link className="text-base font-medium text-primary" to="/dashboard">
+            <Link className="text-base font-medium text-primary" to="/artisan/dashboard">
               Back to dashboard
             </Link>
           </div>
@@ -326,3 +326,4 @@ export default function DesignGeneratorPage() {
     </div>
   );
 }
+
