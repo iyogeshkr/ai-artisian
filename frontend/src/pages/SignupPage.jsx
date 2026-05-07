@@ -1,6 +1,6 @@
 ﻿import { useMemo, useState } from "react";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { Eye, EyeOff, Store, UserRound } from "lucide-react";
+import { Eye, EyeOff, Store, UserCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,7 +28,7 @@ export default function SignupPage() {
     if (role === "artisan") {
       return { icon: Store, title: "Artisan signup", cta: "Create artisan account", next: "/artisan/onboarding" };
     }
-    return { icon: UserRound, title: "Customer signup", cta: "Create customer account", next: "/e-commerce" };
+    return { icon: UserCircle2, title: "Customer signup", cta: "Create customer account", next: "/e-commerce" };
   }, [role]);
 
   if (!authLoading && user) {
