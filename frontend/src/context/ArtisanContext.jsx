@@ -22,6 +22,7 @@ function mapProfileFromDb(dbProfile) {
   return {
     ...dbProfile,
     craftType: dbProfile.craft_type || "",
+    id: dbProfile.clerk_user_id || dbProfile.id,
     samplePhoto: dbProfile.profile_photo || "",
     storefrontId: dbProfile.store_slug || getStorefrontId(normalizedPhone),
   };
@@ -78,7 +79,7 @@ export function ArtisanProvider({ children }) {
       const { data } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", user.id)
+        .eq("clerk_user_id", user.id)
         .single();
 
       if (!isMounted) {
@@ -110,14 +111,14 @@ export function ArtisanProvider({ children }) {
         const { error } = await supabase
           .from("profiles")
           .update(dbUpdates)
-          .eq("id", user.id);
+          .eq("clerk_user_id", user.id);
 
         if (error) {
           return { success: false, error: error.message };
         }
 
         setProfile((current) => {
-          const currentSafe = current || mapProfileFromDb({ id: user.id, ...dbUpdates });
+          const currentSafe = current || mapProfileFromDb({ clerk_user_id: user.id, ...dbUpdates });
           return {
             ...currentSafe,
             ...nextProfile,

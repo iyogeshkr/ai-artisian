@@ -30,6 +30,37 @@ export function getAllowedOrigins() {
   );
 }
 
+export function getClerkAuthenticateOptions() {
+  const authorizedParties = getAllowedOrigins();
+  const jwtKey = process.env.CLERK_JWT_KEY?.trim();
+
+  return {
+    ...(authorizedParties.length > 0 ? { authorizedParties } : {}),
+    ...(jwtKey ? { jwtKey } : {}),
+  };
+}
+
+export function getClerkSecretKey() {
+  const secretKey = process.env.CLERK_SECRET_KEY?.trim();
+
+  if (!secretKey) {
+    throw new Error("CLERK_SECRET_KEY is missing. Configure functions/.env or Firebase secrets.");
+  }
+
+  return secretKey;
+}
+
+export function getSupabaseAdminConfig() {
+  const url = process.env.SUPABASE_URL?.trim();
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+
+  if (!url || !serviceRoleKey) {
+    throw new Error("SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing.");
+  }
+
+  return { serviceRoleKey, url };
+}
+
 export function getImageGenerationDefaults() {
   const size = process.env.HF_IMAGE_SIZE || "1024x1024";
 

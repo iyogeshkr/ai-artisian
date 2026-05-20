@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/config/supabase";
 import { ONBOARDING_CRAFT_TYPES, INDIAN_STATES_AND_UTS } from "@/data/artisanData";
+import { apiRequest } from "@/services/apiClient";
 import { compressImageFile } from "@/utils/imageProcessing";
 
 const TOTAL_STEPS = 4;
@@ -131,9 +132,9 @@ export default function OnboardingWizard({ onComplete }) {
       // Check slug uniqueness
       const { data: existing } = await supabase
         .from("profiles")
-        .select("id")
+        .select("clerk_user_id")
         .eq("store_slug", slug)
-        .neq("id", user.id)
+        .neq("clerk_user_id", user.id)
         .maybeSingle();
 
       if (existing) {
@@ -162,9 +163,11 @@ export default function OnboardingWizard({ onComplete }) {
           profile_photo: form.samplePhoto || null,
           updated_at: new Date().toISOString(),
         })
-        .eq("id", user.id);
+        .eq("clerk_user_id", user.id);
 
       if (updateError) throw updateError;
+
+      await apiRequest("/auth/become-artisan", { method: "POST" });
 
       const { error: storeError } = await supabase.from("stores").upsert({
         artisan_id: user.id,

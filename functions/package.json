@@ -12,6 +12,7 @@
     "deploy": "firebase deploy --only functions,hosting"
   },
   "dependencies": {
+    "@clerk/express": "^2.1.15",
     "@supabase/supabase-js": "^2.104.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

@@ -1,30 +1,35 @@
-﻿import { Navigate, useLocation } from "react-router-dom";
+import { RedirectToSignIn } from "@clerk/react";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { getDashboardPath, isRoleAllowed } from "@/lib/auth";
+
+function AuthLoading({ label }) {
+  return (
+    <div className="flex min-h-[60vh] items-center justify-center text-sm text-muted-foreground">
+      {label}
+    </div>
+  );
+}
 
 export function ProtectedRoute({ children, roles, requireOnboarded = false }) {
   const location = useLocation();
   const { loading, user } = useAuth();
 
   if (loading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center text-sm text-muted-foreground">
-        Loading your session...
-      </div>
-    );
+    return <AuthLoading label="Loading your session..." />;
   }
 
   if (!user) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
+    return <RedirectToSignIn redirectUrl={location.pathname} />;
   }
 
-  const role = user.profile?.role || user.role || "customer";
-  const allowedRoles = roles ? (Array.isArray(roles) ? roles : [roles]) : null;
+  const role = user.role || "user";
 
-  if (allowedRoles && !allowedRoles.includes(role)) {
-    return <Navigate to="/dashboard" replace />;
+  if (!isRoleAllowed(role, roles)) {
+    return <Navigate to={getDashboardPath(role, user.isOnboarded)} replace />;
   }
 
-  if (requireOnboarded && role === "artisan" && !user.profile?.store_setup) {
+  if (requireOnboarded && role === "artisan" && !user.isOnboarded) {
     return <Navigate to="/artisan/onboarding" replace />;
   }
 
@@ -35,26 +40,14 @@ export function DashboardRedirect() {
   const { loading, user } = useAuth();
 
   if (loading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center text-sm text-muted-foreground">
-        Loading your dashboard...
-      </div>
-    );
+    return <AuthLoading label="Loading your dashboard..." />;
   }
 
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  const role = user.profile?.role || user.role || "customer";
+  const role = user.role || "user";
 
-  if (role === "admin") {
-    return <Navigate to="/admin" replace />;
-  }
-
-  if (role === "artisan") {
-    return user.profile?.store_setup ? <Navigate to="/artisan/dashboard" replace /> : <Navigate to="/artisan/onboarding" replace />;
-  }
-
-  return <Navigate to="/e-commerce" replace />;
+  return <Navigate to={getDashboardPath(role, user.isOnboarded)} replace />;
 }

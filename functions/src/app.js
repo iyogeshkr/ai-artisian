@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import authRoutes from "./routes/authRoutes.js";
 import imageRoutes from "./routes/imageRoutes.js";
 import { errorHandler, notFoundHandler } from "./middlewares/errorHandler.js";
 import {
@@ -52,6 +53,7 @@ app.get("/health", (_req, res) => {
   });
 });
 
+app.use("/auth", authRoutes);
 app.use("/", imageRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);

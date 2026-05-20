@@ -1,5 +1,21 @@
 import { supabase } from "@/config/supabase";
 
+let authTokenGetter = null;
+const backendApiBaseUrl = import.meta.env.VITE_BACKEND_API_URL?.trim() || "";
+
+export function setApiAuthTokenGetter(getter) {
+  authTokenGetter = typeof getter === "function" ? getter : null;
+}
+
+async function getAuthHeader() {
+  if (!authTokenGetter) {
+    return {};
+  }
+
+  const token = await authTokenGetter();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 function buildUrl(path) {
   if (/^https?:\/\//i.test(path)) {
     return path;
@@ -43,17 +59,45 @@ async function parseJsonSafely(response) {
 }
 
 export async function apiRequest(path, options = {}) {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  const token = session?.access_token;
+  const authHeader = await getAuthHeader();
+
+  if (path.startsWith("/auth/") && !backendApiBaseUrl) {
+    throw new Error("VITE_BACKEND_API_URL is required for Clerk role updates.");
+  }
+
+  if (path.startsWith("/auth/") && backendApiBaseUrl) {
+    const response = await fetch(`${backendApiBaseUrl}${path}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeader,
+        ...(options.headers || {}),
+      },
+      ...options,
+    });
+
+    const payload = await parseJsonSafely(response);
+
+    if (!response.ok) {
+      const errorMessage =
+        payload?.error ||
+        payload?.message ||
+        "Something went wrong while talking to the server.";
+
+      const error = new Error(errorMessage);
+      error.status = response.status;
+      error.payload = payload;
+      throw error;
+    }
+
+    return payload;
+  }
 
   if (!/^https?:\/\//i.test(path)) {
     const { data, error } = await supabase.functions.invoke(normalizeFunctionName(path), {
       body: parseRequestBody(options.body),
       headers: {
+        ...authHeader,
         ...(options.headers || {}),
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
 
@@ -72,7 +116,7 @@ export async function apiRequest(path, options = {}) {
   const response = await fetch(buildUrl(path), {
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...authHeader,
       ...(options.headers || {}),
     },
     ...options,

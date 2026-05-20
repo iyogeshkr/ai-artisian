@@ -255,9 +255,18 @@ export default function DesignGeneratorPage() {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             ) : (
-              <Button type="button" onClick={() => runGeneration()} disabled={!canGenerate || isGenerating}>
+              <Button 
+                type="button" 
+                onClick={() => runGeneration()} 
+                disabled={!canGenerate || isGenerating || retryCountdown > 0}
+                className="min-w-[200px]"
+              >
                 <Palette className="mr-2 h-4 w-4" />
-                Generate Designs
+                {isGenerating 
+                  ? "Generating..." 
+                  : retryCountdown > 0 
+                    ? `Retry in ${retryCountdown}s` 
+                    : "Generate Designs"}
               </Button>
             )}
           </div>

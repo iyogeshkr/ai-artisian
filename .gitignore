@@ -17,6 +17,7 @@ Thumbs.db
 
 # Secrets
 .env
+frontend/.env.local
 frontend/.env
 functions/.secret.local
 

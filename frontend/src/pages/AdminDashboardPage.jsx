@@ -15,7 +15,7 @@ export default function AdminDashboardPage() {
     const [{ data: artisanRows, error: artisanError }, { data: productRows, error: productError }] = await Promise.all([
       supabase
         .from("profiles")
-        .select("id, full_name, name, email, role, artisan_status, store_setup, created_at, stores(id, name, slug, status)")
+        .select("clerk_user_id, full_name, name, email, role, artisan_status, store_setup, created_at, stores(id, name, slug, status)")
         .eq("role", "artisan")
         .order("created_at", { ascending: false }),
       supabase
@@ -42,7 +42,7 @@ export default function AdminDashboardPage() {
     const { error } = await supabase
       .from("profiles")
       .update({ artisan_status: status })
-      .eq("id", artisanId)
+      .eq("clerk_user_id", artisanId)
       .eq("role", "artisan");
 
     if (error) {
@@ -51,7 +51,7 @@ export default function AdminDashboardPage() {
     }
 
     await supabase.from("stores").update({ status: status === "approved" ? "active" : status }).eq("artisan_id", artisanId);
-    setArtisans((current) => current.map((artisan) => (artisan.id === artisanId ? { ...artisan, artisan_status: status } : artisan)));
+    setArtisans((current) => current.map((artisan) => (artisan.clerk_user_id === artisanId ? { ...artisan, artisan_status: status } : artisan)));
     toast({ title: "Artisan updated", description: `Status changed to ${status}.` });
   };
 
@@ -85,15 +85,15 @@ export default function AdminDashboardPage() {
           <div className="border-b p-4"><h2 className="flex items-center gap-2 text-xl font-semibold"><Store className="h-5 w-5" /> Artisan approvals</h2></div>
           <div className="divide-y">
             {artisans.map((artisan) => (
-              <div key={artisan.id} className="grid gap-3 p-4 lg:grid-cols-[1fr_auto] lg:items-center">
+              <div key={artisan.clerk_user_id || artisan.id} className="grid gap-3 p-4 lg:grid-cols-[1fr_auto] lg:items-center">
                 <div>
                   <p className="font-semibold">{artisan.full_name || artisan.name || "Unnamed artisan"}</p>
                   <p className="text-sm text-muted-foreground">{artisan.email}</p>
                   <p className="mt-1 text-sm">Status: <span className="font-medium capitalize">{artisan.artisan_status || "pending"}</span></p>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={() => updateArtisanStatus(artisan.id, "approved")}><CheckCircle2 className="mr-2 h-4 w-4" />Approve</Button>
-                  <Button size="sm" variant="outline" onClick={() => updateArtisanStatus(artisan.id, "rejected")}><XCircle className="mr-2 h-4 w-4" />Reject</Button>
+                  <Button size="sm" onClick={() => updateArtisanStatus(artisan.clerk_user_id || artisan.id, "approved")}><CheckCircle2 className="mr-2 h-4 w-4" />Approve</Button>
+                  <Button size="sm" variant="outline" onClick={() => updateArtisanStatus(artisan.clerk_user_id || artisan.id, "rejected")}><XCircle className="mr-2 h-4 w-4" />Reject</Button>
                 </div>
               </div>
             ))}
