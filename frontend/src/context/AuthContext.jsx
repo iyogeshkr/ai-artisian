@@ -48,10 +48,11 @@ export function AuthProvider({ children }) {
     return getToken({ skipCache: true });
   }, [getToken]);
 
+  const getSupabaseToken = useCallback(() => {
+    return getToken({ skipCache: true, template: "supabase" });
+  }, [getToken]);
+
   useEffect(() => {
-    const getSupabaseToken = async () => {
-      return getFreshClerkToken();
-    };
     // Pass the token getter function directly so apiClient can call it to obtain the token string
     setApiAuthTokenGetter(getFreshClerkToken);
     setSupabaseAuthTokenGetter(getSupabaseToken);
@@ -59,7 +60,7 @@ export function AuthProvider({ children }) {
       setApiAuthTokenGetter(null);
       setSupabaseAuthTokenGetter(null);
     };
-  }, [getFreshClerkToken]);
+  }, [getFreshClerkToken, getSupabaseToken]);
 
   const user = useMemo(
     () => (isLoaded && isSignedIn ? normalizeClerkUser(clerkUser) : null),
