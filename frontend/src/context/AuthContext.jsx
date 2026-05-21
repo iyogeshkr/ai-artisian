@@ -52,7 +52,8 @@ export function AuthProvider({ children }) {
     const getSupabaseToken = async () => {
       return getFreshClerkToken();
     };
-    setApiAuthTokenGetter(() => getFreshClerkToken());
+    // Pass the token getter function directly so apiClient can call it to obtain the token string
+    setApiAuthTokenGetter(getFreshClerkToken);
     setSupabaseAuthTokenGetter(getSupabaseToken);
     return () => {
       setApiAuthTokenGetter(null);

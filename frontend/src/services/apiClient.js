@@ -79,12 +79,17 @@ async function requestOnce(path, options = {}) {
   }
 
   if (!/^https?:\/\//i.test(path)) {
+    const requestHeaders = new Headers({
+      "Content-Type": "application/json",
+      ...authHeader,
+    });
+
+    for (const [key, value] of Object.entries(options.headers || {})) {
+      requestHeaders.set(key, value);
+    }
+
     const response = await fetchWithTimeout(`${backendApiBaseUrl}${path}`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...authHeader,
-        ...(options.headers || {}),
-      },
+      headers: requestHeaders,
       ...options,
     });
 
@@ -107,12 +112,17 @@ async function requestOnce(path, options = {}) {
     return payload;
   }
 
+  const requestHeaders = new Headers({
+    "Content-Type": "application/json",
+    ...authHeader,
+  });
+
+  for (const [key, value] of Object.entries(options.headers || {})) {
+    requestHeaders.set(key, value);
+  }
+
   const response = await fetchWithTimeout(buildUrl(path), {
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeader,
-      ...(options.headers || {}),
-    },
+    headers: requestHeaders,
     ...options,
   });
 

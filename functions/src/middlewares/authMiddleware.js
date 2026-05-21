@@ -6,6 +6,13 @@ function hasBearerToken(req) {
   return req.headers.authorization?.startsWith("Bearer ");
 }
 
+function redactToken(header) {
+  if (!header) return null;
+  const token = header.replace(/^Bearer\s+/i, "");
+  if (token.length <= 12) return token;
+  return `${token.slice(0, 8)}...${token.slice(-4)}`;
+}
+
 function getAuthErrorMessage(error) {
   const message = error?.message || "";
 
@@ -26,6 +33,9 @@ function getAuthErrorCode(message = "") {
 
 export async function requireAuth(req, res, next) {
   if (!hasBearerToken(req)) {
+    // Log minimal request info for diagnostics (do not log full tokens)
+    const redacted = redactToken(req.headers.authorization);
+    console.error("Auth middleware: missing Bearer token. origin=", req.headers.origin, "authorization(redacted)=", redacted);
     return res.status(401).json({
       code: "auth_missing_token",
       error: "Missing or invalid authorization header.",
@@ -33,6 +43,9 @@ export async function requireAuth(req, res, next) {
   }
 
   try {
+    // Helpful debug: log that we're attempting to authenticate and which origin/token prefix arrived
+    const redacted = redactToken(req.headers.authorization);
+    console.debug("Auth middleware: authenticateRequest attempt. origin=", req.headers.origin, "authorization(redacted)=", redacted);
     const requestState = await clerkClient.authenticateRequest(req, getClerkAuthenticateOptions());
 
     if (!requestState.isAuthenticated) {
@@ -69,7 +82,8 @@ export async function requireAuth(req, res, next) {
     return next();
   } catch (error) {
     // Log server-side auth errors for diagnostics (do not expose full errors to clients)
-    console.error("Auth middleware error:", error);
+    const redacted = redactToken(req.headers.authorization);
+    console.error("Auth middleware error:", error?.message || error, "origin=", req.headers.origin, "authorization(redacted)=", redacted);
     const message = error?.message || "";
     return res.status(401).json({
       code: getAuthErrorCode(message),

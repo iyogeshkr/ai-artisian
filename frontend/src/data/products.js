@@ -227,7 +227,7 @@
     originalPriceNum: 3100,
     discount: "29% off",
     image:
-      "https://images.unsplash.com/photo-1612196808214-b8e1d6145a16?w=400&q=80",
+      "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?w=400&q=80&auto=format&fit=crop",
     rating: "4.9",
     reviews: 209,
     badge: "Bestseller",

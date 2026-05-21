@@ -33,6 +33,11 @@ async function syncProfileRole(clerkUser, role, storeSetup) {
 
 router.post("/become-artisan", requireAuth, async (req, res, next) => {
   try {
+    // Log minimal request info for diagnostics (redacted authorization header)
+    const authHeader = req.headers.authorization || null;
+    const redacted = authHeader ? `${authHeader.slice(0, 20)}...` : null;
+    console.debug("/auth/become-artisan called: origin=", req.headers.origin, "authorization(redacted)=", redacted);
+
     const clerkUser = req.clerkUser || await clerkClient.users.getUser(req.userId);
 
     await clerkClient.users.updateUserMetadata(clerkUser.id, {

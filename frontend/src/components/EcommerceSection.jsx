@@ -81,7 +81,7 @@ const EcommerceSection = () => {
                 <img
                   alt="E-commerce marketplace for handmade products"
                   className="w-full h-full object-cover"
-                  src="https://images.unsplash.com/photo-1516321318423-f06f70a504f9"
+                  src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=1200&q=80&auto=format&fit=crop"
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
                   <div className="flex items-center space-x-3">
