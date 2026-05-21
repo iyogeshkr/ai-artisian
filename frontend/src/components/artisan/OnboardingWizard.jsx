@@ -149,6 +149,9 @@ export default function OnboardingWizard({ onComplete }) {
 
       await apiRequest("/auth/become-artisan", { method: "POST" });
 
+      // Refresh Clerk before any Supabase writes so the session picks up the new artisan role.
+      await refreshUser?.();
+
       // Save onboarding details after Clerk role metadata is synced by the backend.
       const { error: updateError } = await supabase
         .from("profiles")
@@ -167,8 +170,6 @@ export default function OnboardingWizard({ onComplete }) {
         .eq("clerk_user_id", user.id);
 
       if (updateError) throw updateError;
-
-      await refreshUser?.();
 
       const { error: storeError } = await supabase.from("stores").upsert({
         artisan_id: user.id,
