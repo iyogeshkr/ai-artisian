@@ -11,11 +11,21 @@ export function setApiAuthTokenGetter(getter) {
 
 async function getAuthHeader() {
   if (!authTokenGetter) {
+    console.warn("[API] No auth token getter configured");
     return {};
   }
 
-  const token = await authTokenGetter();
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  try {
+    const token = await authTokenGetter();
+    if (!token) {
+      console.warn("[API] Auth token getter returned null/undefined");
+      return {};
+    }
+    return { Authorization: `Bearer ${token}` };
+  } catch (err) {
+    console.error("[API] Failed to get Clerk token:", err?.message || err);
+    return {};
+  }
 }
 
 function buildUrl(path) {

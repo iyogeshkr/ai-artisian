@@ -48,8 +48,17 @@ export function AuthProvider({ children }) {
     return getToken({ skipCache: true });
   }, [getToken]);
 
-  const getSupabaseToken = useCallback(() => {
-    return getToken({ skipCache: true, template: "supabase" });
+  const getSupabaseToken = useCallback(async () => {
+    try {
+      const token = await getToken({ skipCache: true, template: "supabase" });
+      if (!token) {
+        console.warn("[Auth] Clerk returned null/undefined for 'supabase' template. Is the template configured in Clerk dashboard?");
+      }
+      return token;
+    } catch (err) {
+      console.error("[Auth] Failed to get Supabase token:", err?.message || err);
+      throw err;
+    }
   }, [getToken]);
 
   useEffect(() => {

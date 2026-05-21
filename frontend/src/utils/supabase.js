@@ -12,11 +12,22 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 async function authenticatedFetch(input, init = {}) {
-  const token = await supabaseAuthTokenGetter?.();
+  let token;
+  try {
+    token = await supabaseAuthTokenGetter?.();
+  } catch (err) {
+    console.error("[Supabase] Failed to get Clerk token:", err?.message || err);
+  }
+
   const headers = new Headers(init.headers || {});
 
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
+  } else {
+    console.warn("[Supabase] No Clerk token available for authenticated request", {
+      url: input,
+      hasTokenGetter: !!supabaseAuthTokenGetter,
+    });
   }
 
   return fetch(input, {
