@@ -44,17 +44,21 @@ export function AuthProvider({ children }) {
   const { isLoaded, isSignedIn, user: clerkUser } = useUser();
   const { signOut } = useClerk();
 
+  const getFreshClerkToken = useCallback(() => {
+    return getToken({ skipCache: true });
+  }, [getToken]);
+
   useEffect(() => {
     const getSupabaseToken = async () => {
-      return getToken();
+      return getFreshClerkToken();
     };
-    setApiAuthTokenGetter(() => getToken());
+    setApiAuthTokenGetter(() => getFreshClerkToken());
     setSupabaseAuthTokenGetter(getSupabaseToken);
     return () => {
       setApiAuthTokenGetter(null);
       setSupabaseAuthTokenGetter(null);
     };
-  }, [getToken]);
+  }, [getFreshClerkToken]);
 
   const user = useMemo(
     () => (isLoaded && isSignedIn ? normalizeClerkUser(clerkUser) : null),
