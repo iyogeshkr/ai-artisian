@@ -185,3 +185,44 @@ create policy order_items_customer_insert on public.order_items for insert with 
   exists (select 1 from public.orders where orders.id = order_items.order_id and (orders.customer_id = auth.jwt() ->> 'sub' or orders.customer_id is null))
 );
 create policy order_items_admin_all on public.order_items for all using (public.is_admin()) with check (public.is_admin());
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'product-images',
+  'product-images',
+  true,
+  5242880,
+  array['image/jpeg', 'image/png', 'image/webp']
+)
+on conflict (id) do update set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists product_images_public_read on storage.objects;
+create policy product_images_public_read on storage.objects
+  for select using (bucket_id = 'product-images');
+
+drop policy if exists product_images_owner_insert on storage.objects;
+create policy product_images_owner_insert on storage.objects
+  for insert with check (
+    bucket_id = 'product-images'
+    and (storage.foldername(name))[1] = auth.jwt() ->> 'sub'
+  );
+
+drop policy if exists product_images_owner_update on storage.objects;
+create policy product_images_owner_update on storage.objects
+  for update using (
+    bucket_id = 'product-images'
+    and (storage.foldername(name))[1] = auth.jwt() ->> 'sub'
+  ) with check (
+    bucket_id = 'product-images'
+    and (storage.foldername(name))[1] = auth.jwt() ->> 'sub'
+  );
+
+drop policy if exists product_images_owner_delete on storage.objects;
+create policy product_images_owner_delete on storage.objects
+  for delete using (
+    bucket_id = 'product-images'
+    and (storage.foldername(name))[1] = auth.jwt() ->> 'sub'
+  );

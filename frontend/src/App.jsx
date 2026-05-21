@@ -22,6 +22,7 @@ const AdminDashboardPage = lazy(() => import("@/pages/AdminDashboardPage"));
 const DesignGeneratorPage = lazy(() => import("@/pages/DesignGeneratorPage"));
 const ProductsPage = lazy(() => import("@/pages/ProductsPage"));
 const AddProductPage = lazy(() => import("@/pages/AddProductPage"));
+const ProductDetailPage = lazy(() => import("@/pages/ProductDetailPage"));
 const LearnPage = lazy(() => import("@/pages/LearnPage"));
 const StorefrontPage = lazy(() => import("@/pages/StorefrontPage"));
 const EcommercePage = lazy(() => import("@/pages/EcommercePage"));
@@ -66,6 +67,7 @@ function AppShell() {
             <Route path="/design" element={<ProtectedRoute roles="artisan" requireOnboarded><ErrorBoundary><DesignGeneratorPage /></ErrorBoundary></ProtectedRoute>} />
             <Route path="/products" element={<ProtectedRoute roles="artisan" requireOnboarded><ProductsPage /></ProtectedRoute>} />
             <Route path="/products/add" element={<ProtectedRoute roles="artisan" requireOnboarded><AddProductPage /></ProtectedRoute>} />
+            <Route path="/product/:id" element={<ProductDetailPage />} />
             <Route path="/e-commerce" element={<EcommercePage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/learn" element={<LearnPage />} />

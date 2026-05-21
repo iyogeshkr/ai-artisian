@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo } fro
 import { useAuth as useClerkAuth, useClerk, useUser } from "@clerk/react";
 import { setApiAuthTokenGetter } from "@/services/apiClient";
 import { getClerkRole, getDashboardPath, isOnboarded, isRoleAllowed } from "@/lib/auth";
+import { setSupabaseAuthTokenGetter } from "@/utils/supabase";
 
 const AuthContext = createContext(null);
 
@@ -44,8 +45,15 @@ export function AuthProvider({ children }) {
   const { signOut } = useClerk();
 
   useEffect(() => {
+    const getSupabaseToken = async () => {
+      return getToken();
+    };
     setApiAuthTokenGetter(() => getToken());
-    return () => setApiAuthTokenGetter(null);
+    setSupabaseAuthTokenGetter(getSupabaseToken);
+    return () => {
+      setApiAuthTokenGetter(null);
+      setSupabaseAuthTokenGetter(null);
+    };
   }, [getToken]);
 
   const user = useMemo(
@@ -64,8 +72,8 @@ export function AuthProvider({ children }) {
       loading: !isLoaded,
       logout: () => signOut({ redirectUrl: "/" }),
       refreshUser: async () => {
-        await clerkUser?.reload?.();
-        return normalizeClerkUser(clerkUser);
+        const refreshedUser = await clerkUser?.reload?.();
+        return normalizeClerkUser(refreshedUser || clerkUser);
       },
       user,
     }),

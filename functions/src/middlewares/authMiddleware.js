@@ -68,6 +68,8 @@ export async function requireAuth(req, res, next) {
 
     return next();
   } catch (error) {
+    // Log server-side auth errors for diagnostics (do not expose full errors to clients)
+    console.error("Auth middleware error:", error);
     const message = error?.message || "";
     return res.status(401).json({
       code: getAuthErrorCode(message),

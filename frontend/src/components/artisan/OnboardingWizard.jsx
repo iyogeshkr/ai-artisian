@@ -20,7 +20,7 @@ function normalizePhoneNumber(phoneNumber = "") {
 
 export default function OnboardingWizard({ onComplete }) {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { refreshUser, user } = useAuth();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
@@ -147,7 +147,9 @@ export default function OnboardingWizard({ onComplete }) {
         return;
       }
 
-      // Save to Supabase
+      await apiRequest("/auth/become-artisan", { method: "POST" });
+
+      // Save onboarding details after Clerk role metadata is synced by the backend.
       const { error: updateError } = await supabase
         .from("profiles")
         .update({
@@ -156,7 +158,6 @@ export default function OnboardingWizard({ onComplete }) {
           phone: normalizePhoneNumber(form.phone),
           craft_type: form.craftType,
           region: form.region,
-          role: "artisan",
           artisan_status: "pending",
           store_slug: slug,
           store_setup: true,
@@ -167,7 +168,7 @@ export default function OnboardingWizard({ onComplete }) {
 
       if (updateError) throw updateError;
 
-      await apiRequest("/auth/become-artisan", { method: "POST" });
+      await refreshUser?.();
 
       const { error: storeError } = await supabase.from("stores").upsert({
         artisan_id: user.id,
@@ -386,5 +387,4 @@ export default function OnboardingWizard({ onComplete }) {
     </div>
   );
 }
-
 

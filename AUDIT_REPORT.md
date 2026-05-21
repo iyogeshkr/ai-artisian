@@ -516,7 +516,7 @@ create policy profiles_update_self on public.profiles for update
 3. Add profile select query AFTER creation to confirm
 4. Make frontend profile insert a no-op if trigger succeeds
 
-**Location**: `/supabase/schema.sql` and `frontend/src/context/AuthContext.jsx`
+**Location**: `/supabase/clerk_schema.sql` and `frontend/src/context/AuthContext.jsx`
 
 ---
 

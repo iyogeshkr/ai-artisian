@@ -1,7 +1,9 @@
-import { supabase } from "@/config/supabase";
+import { logError, logInfo, logWarn } from "@/utils/logger";
+import { withRetry } from "@/utils/retry";
 
 let authTokenGetter = null;
-const backendApiBaseUrl = import.meta.env.VITE_BACKEND_API_URL?.trim() || "";
+const backendApiBaseUrl = (import.meta.env.VITE_BACKEND_API_URL?.trim() || "").replace(/\/+$/, "");
+const DEFAULT_TIMEOUT_MS = 30000;
 
 export function setApiAuthTokenGetter(getter) {
   authTokenGetter = typeof getter === "function" ? getter : null;
@@ -25,26 +27,6 @@ function buildUrl(path) {
   return normalizedPath;
 }
 
-function normalizeFunctionName(path) {
-  return path.startsWith("/") ? path.slice(1) : path;
-}
-
-function parseRequestBody(body) {
-  if (body == null) {
-    return undefined;
-  }
-
-  if (typeof body !== "string") {
-    return body;
-  }
-
-  try {
-    return JSON.parse(body);
-  } catch {
-    return body;
-  }
-}
-
 async function parseJsonSafely(response) {
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.includes("application/json")) {
@@ -58,15 +40,46 @@ async function parseJsonSafely(response) {
   }
 }
 
-export async function apiRequest(path, options = {}) {
-  const authHeader = await getAuthHeader();
+function createRequestError(message, status, payload) {
+  const error = new Error(message);
+  error.status = status;
+  error.payload = payload;
+  return error;
+}
 
-  if (path.startsWith("/auth/") && !backendApiBaseUrl) {
-    throw new Error("VITE_BACKEND_API_URL is required for Clerk role updates.");
+async function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController();
+  const timeoutMs = options.timeoutMs || DEFAULT_TIMEOUT_MS;
+  const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: options.signal || controller.signal,
+    });
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw createRequestError("The request timed out. Please try again.", 504, {
+        timeoutMs,
+      });
+    }
+
+    throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
+
+async function requestOnce(path, options = {}) {
+  const authHeader = await getAuthHeader();
+  const startedAt = performance.now();
+
+  if (!/^https?:\/\//i.test(path) && !backendApiBaseUrl) {
+    throw new Error("VITE_BACKEND_API_URL is required for backend API requests.");
   }
 
-  if (path.startsWith("/auth/") && backendApiBaseUrl) {
-    const response = await fetch(`${backendApiBaseUrl}${path}`, {
+  if (!/^https?:\/\//i.test(path)) {
+    const response = await fetchWithTimeout(`${backendApiBaseUrl}${path}`, {
       headers: {
         "Content-Type": "application/json",
         ...authHeader,
@@ -83,37 +96,18 @@ export async function apiRequest(path, options = {}) {
         payload?.message ||
         "Something went wrong while talking to the server.";
 
-      const error = new Error(errorMessage);
-      error.status = response.status;
-      error.payload = payload;
-      throw error;
+      throw createRequestError(errorMessage, response.status, payload);
     }
 
+    logInfo("API request completed", {
+      durationMs: Math.round(performance.now() - startedAt),
+      path,
+      status: response.status,
+    });
     return payload;
   }
 
-  if (!/^https?:\/\//i.test(path)) {
-    const { data, error } = await supabase.functions.invoke(normalizeFunctionName(path), {
-      body: parseRequestBody(options.body),
-      headers: {
-        ...authHeader,
-        ...(options.headers || {}),
-      },
-    });
-
-    if (error) {
-      const errorMessage =
-        error?.message || "Something went wrong while talking to the server.";
-      const invokeError = new Error(errorMessage);
-      invokeError.status = error?.status || 500;
-      invokeError.payload = error;
-      throw invokeError;
-    }
-
-    return data;
-  }
-
-  const response = await fetch(buildUrl(path), {
+  const response = await fetchWithTimeout(buildUrl(path), {
     headers: {
       "Content-Type": "application/json",
       ...authHeader,
@@ -130,11 +124,35 @@ export async function apiRequest(path, options = {}) {
       payload?.message ||
       "Something went wrong while talking to the server.";
 
-    const error = new Error(errorMessage);
-    error.status = response.status;
-    error.payload = payload;
-    throw error;
+    throw createRequestError(errorMessage, response.status, payload);
   }
 
+  logInfo("API request completed", {
+    durationMs: Math.round(performance.now() - startedAt),
+    path,
+    status: response.status,
+  });
   return payload;
+}
+
+export async function apiRequest(path, options = {}) {
+  try {
+    return await withRetry(() => requestOnce(path, options), {
+      delays: options.retryDelays || [750, 1600],
+      label: `api:${path}`,
+      onRetry: ({ attempt, error }) => {
+        logWarn("API request retry scheduled", {
+          attempt,
+          path,
+          status: error.status,
+        });
+      },
+    });
+  } catch (error) {
+    logError("API request failed", error, {
+      method: options.method || "GET",
+      path,
+    });
+    throw error;
+  }
 }

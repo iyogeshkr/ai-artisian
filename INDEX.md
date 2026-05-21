@@ -226,8 +226,7 @@ README_AUDIT.md
 - **Document**: SECURITY_REMEDIATION.md
 - **Impact**: MUST FIX before launch
 
-### Issue #2: Profile Privacy 🟡
-- **File**: supabase/schema.sql
+- **File**: supabase/clerk_schema.sql
 - **Fix**: Change RLS policy (5 min)
 - **Document**: AUDIT_REPORT.md section 10
 - **Impact**: User privacy violation

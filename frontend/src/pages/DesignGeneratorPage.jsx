@@ -1,5 +1,5 @@
-﻿import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, Palette, RefreshCw, Share2 } from "lucide-react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Palette, Share2 } from "lucide-react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import MobileBottomNav from "@/components/artisan/MobileBottomNav";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import { useDesigns } from "@/context/DesignContext";
 import { generateDesigns } from "@/services/designService";
 import { pingAnalytics } from "@/utils/analytics";
 import { shareProduct } from "@/utils/share";
+import { toast } from "@/components/ui/use-toast";
+import { logError, logInfo, logWarn } from "@/utils/logger";
 
 const TOTAL_STEPS = 4;
 const EMPTY_PLACEHOLDERS = [0, 1, 2];
@@ -27,6 +29,30 @@ function DesignSkeletonTile() {
         <div className="h-11 animate-pulse rounded-xl bg-muted" />
       </div>
     </div>
+  );
+}
+
+function ImageFallback({ alt, className, src }) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed || !src) {
+    return (
+      <div className={`flex items-center justify-center bg-muted text-sm text-muted-foreground ${className}`}>
+        Image unavailable
+      </div>
+    );
+  }
+
+  return (
+    <img
+      alt={alt}
+      className={className}
+      src={src}
+      onError={() => {
+        setFailed(true);
+        logWarn("Image failed to render", { srcPrefix: src.slice(0, 48) });
+      }}
+    />
   );
 }
 
@@ -45,6 +71,8 @@ export default function DesignGeneratorPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [retryCountdown, setRetryCountdown] = useState(0);
   const [hasRetried503, setHasRetried503] = useState(false);
+  const activeRequestId = useRef(0);
+  const retryTimerRef = useRef(null);
 
   useEffect(() => {
     if (profile) {
@@ -63,6 +91,15 @@ export default function DesignGeneratorPage() {
 
     return () => window.clearTimeout(timerId);
   }, [retryCountdown]);
+
+  useEffect(() => {
+    return () => {
+      if (retryTimerRef.current) {
+        window.clearTimeout(retryTimerRef.current);
+      }
+      activeRequestId.current += 1;
+    };
+  }, []);
 
   if (!isOnboarded) {
     return <Navigate to="/artisan/onboarding" replace />;
@@ -91,36 +128,74 @@ export default function DesignGeneratorPage() {
   };
 
   const runGeneration = async (allowRetry = true) => {
+    if (isGenerating && allowRetry) {
+      return;
+    }
+
+    const requestId = activeRequestId.current + 1;
+    activeRequestId.current = requestId;
     setIsGenerating(true);
     setError("");
 
     try {
       const result = await generateDesigns(form);
-      const designs = result.designs.map((design, index) => ({
-        ...design,
-        id: `${result.generatedAt}-${index}`,
-        imageUrl: `data:${design.mimeType};base64,${design.imageBase64}`,
-      }));
-      setCurrentDesignBatch(designs);
-
-      if (result.hasPartialFailure) {
-        setError("à¤•à¥à¤› designs à¤¨à¤¹à¥€à¤‚ à¤¬à¤¨ à¤¸à¤•à¥€à¤‚, à¤²à¥‡à¤•à¤¿à¤¨ à¤œà¥‹ à¤¬à¤¨ à¤—à¤ˆ à¤¹à¥ˆà¤‚ à¤‰à¤¨à¥à¤¹à¥‡à¤‚ à¤†à¤ª à¤…à¤­à¥€ use à¤•à¤° à¤¸à¤•à¤¤à¥‡ à¤¹à¥ˆà¤‚à¥¤");
-      }
-    } catch (generationError) {
-      if (generationError.status === 503 && allowRetry && !hasRetried503) {
-        setHasRetried503(true);
-        setRetryCountdown(5);
-        window.setTimeout(() => {
-          runGeneration(false);
-        }, 5000);
+      if (activeRequestId.current !== requestId) {
         return;
       }
 
-      setError(
-        generationError.message || "Design couldn't load, try again.",
-      );
+      const designs = result.designs.map((design, index) => ({
+        ...design,
+        id: `${result.generatedAt}-${index}`,
+        imageUrl: design.imageUrl || `data:${design.mimeType};base64,${design.imageBase64}`,
+      }));
+      await setCurrentDesignBatch(designs);
+      logInfo("Design generation completed", {
+        count: designs.length,
+        hasPartialFailure: Boolean(result.hasPartialFailure),
+      });
+      toast({
+        description: `${designs.length} design${designs.length === 1 ? "" : "s"} generated.`,
+        title: "Designs ready",
+      });
+      setHasRetried503(false);
+      setRetryCountdown(0);
+
+      if (result.hasPartialFailure) {
+        setError("à¤•à¥à¤› designs à¤¨à¤¹à¥€à¤‚ à¤¬à¤¨ à¤¸à¤•à¥€à¤‚, à¤²à¥‡à¤•à¤¿à¤¨ à¤œà¥‹ à¤¬à¤¨ à¤—à¤ˆ à¤¹à¥ˆà¤‚ à¤‰à¤¨à¥à¤¹à¥‡à¤‚ à¤†à¤ª à¤…à¤­à¥€ use à¤•à¤° à¤¸à¤•à¤¤à¥‡ à¤¹à¥ˆà¤‚à¥¤");
+        toast({
+          description: "Some variants failed, but the successful designs are usable.",
+          title: "Partial generation",
+          variant: "destructive",
+        });
+      }
+    } catch (generationError) {
+      if (activeRequestId.current !== requestId) {
+        return;
+      }
+
+      if (generationError.status === 503 && allowRetry && !hasRetried503) {
+        setHasRetried503(true);
+        setRetryCountdown(5);
+        retryTimerRef.current = window.setTimeout(() => {
+          retryTimerRef.current = null;
+          setIsGenerating(false);
+          runGeneration(false);
+        }, 5000);
+        logWarn("Design generation model loading; retry scheduled", {
+          delayMs: 5000,
+          status: generationError.status,
+        });
+        return;
+      }
+
+      const message = generationError.message || "Design couldn't load, try again.";
+      setError(message);
+      logError("Design generation failed", generationError);
+      toast({ description: message, title: "Generation failed", variant: "destructive" });
     } finally {
-      setIsGenerating(false);
+      if (activeRequestId.current === requestId && !retryTimerRef.current) {
+        setIsGenerating(false);
+      }
     }
   };
 
@@ -293,7 +368,7 @@ export default function DesignGeneratorPage() {
             <div className="grid gap-4 md:grid-cols-3">
               {currentDesigns.map((design) => (
                 <article key={design.id} className="overflow-hidden rounded-[1.5rem] border bg-card">
-                  <img alt="Generated design" className="aspect-square w-full object-cover" src={design.imageUrl} />
+                  <ImageFallback alt="Generated design" className="aspect-square w-full object-cover" src={design.imageUrl} />
                   <div className="space-y-3 p-4">
                     <p className="line-clamp-3 text-base text-muted-foreground">{design.prompt}</p>
                     <div className="flex gap-2">
@@ -316,7 +391,7 @@ export default function DesignGeneratorPage() {
         {selectedDesign ? (
           <section className="mt-6 rounded-[2rem] border bg-card p-5 shadow-sm sm:p-6">
             <div className="grid gap-5 lg:grid-cols-[1fr_1.1fr]">
-              <img alt="Selected design" className="w-full rounded-[1.5rem] object-cover" src={selectedDesign.imageUrl} />
+              <ImageFallback alt="Selected design" className="w-full rounded-[1.5rem] object-cover" src={selectedDesign.imageUrl} />
               <div>
                 <p className="inline-flex min-h-11 items-center rounded-full bg-primary/10 px-4 py-2 text-base font-semibold text-primary">
                   Selected design
@@ -335,4 +410,3 @@ export default function DesignGeneratorPage() {
     </div>
   );
 }
-

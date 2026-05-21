@@ -1,7 +1,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { config as loadEnv } from "dotenv";
-import { defineSecret } from "firebase-functions/params";
 
 const currentFilePath = fileURLToPath(import.meta.url);
 const currentDirPath = path.dirname(currentFilePath);
@@ -10,7 +9,6 @@ const functionsRoot = path.resolve(currentDirPath, "..", "..");
 loadEnv({ path: path.join(functionsRoot, ".env") });
 loadEnv({ override: true, path: path.join(functionsRoot, ".secret.local") });
 
-export const huggingFaceApiKeySecret = defineSecret("HF_API_KEY");
 export const FUNCTION_REGION = process.env.FUNCTION_REGION || "us-central1";
 
 const VALID_IMAGE_SIZES = new Set(["1024x1024", "1024x1536", "1536x1024"]);
@@ -21,11 +19,25 @@ export function getAllowedOrigins() {
     .map((origin) => origin.trim())
     .filter(Boolean);
 
+  const deploymentOrigins = [
+    process.env.FRONTEND_ORIGIN,
+    process.env.APP_ORIGIN,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : null,
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+    "https://aiartisan.app",
+    "https://aiartisan.vercel.app",
+    "https://ai-artisan.vercel.app",
+    "https://ai-artisan.web.app",
+  ].filter(Boolean);
+
   return Array.from(
     new Set([
       ...origins,
-      "https://ai-artisan.web.app",
-      "https://ai-artisan.firebaseapp.com",
+      ...deploymentOrigins,
     ]),
   );
 }
@@ -44,7 +56,7 @@ export function getClerkSecretKey() {
   const secretKey = process.env.CLERK_SECRET_KEY?.trim();
 
   if (!secretKey) {
-    throw new Error("CLERK_SECRET_KEY is missing. Configure functions/.env or Firebase secrets.");
+    throw new Error("CLERK_SECRET_KEY is missing. Configure Railway or functions/.env.");
   }
 
   return secretKey;
@@ -84,15 +96,7 @@ export function getHuggingFaceApiKey() {
     return envKey;
   }
 
-  const secretValue = huggingFaceApiKeySecret.value();
-  if (
-    secretValue?.trim() &&
-    !secretValue.trim().includes("your_hugging_face_api_key_here")
-  ) {
-    return secretValue.trim();
-  }
-
   throw new Error(
-    "HF_API_KEY is missing or still using the placeholder value. Configure functions/.secret.local with a real Hugging Face access token or set the Firebase secret.",
+    "HF_API_KEY is missing or still using the placeholder value. Configure Railway with HUGGING_FACE_API_KEY or HF_API_KEY.",
   );
 }

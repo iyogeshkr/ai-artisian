@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { logError } from "@/utils/logger";
 
 export class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -9,6 +10,12 @@ export class ErrorBoundary extends React.Component {
 
   static getDerivedStateFromError() {
     return { hasError: true };
+  }
+
+  componentDidCatch(error, info) {
+    logError("React error boundary caught an error", error, {
+      componentStack: info?.componentStack,
+    });
   }
 
   render() {

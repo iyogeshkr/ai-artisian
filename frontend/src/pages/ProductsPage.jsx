@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { useArtisan } from "@/context/ArtisanContext";
 import { useProducts } from "@/context/ProductContext";
 import { shareProduct } from "@/utils/share";
+import { ErrorState } from "@/components/ui/EmptyState";
 
 export default function ProductsPage() {
   const navigate = useNavigate();
   const { isOnboarded, profile } = useArtisan();
-  const { deleteProduct, products } = useProducts();
+  const { deleteProduct, error, loading, mutationLoading, products } = useProducts();
 
   if (!isOnboarded) {
     return <Navigate to="/artisan/onboarding" replace />;
@@ -27,7 +28,27 @@ export default function ProductsPage() {
           <Button onClick={() => navigate("/products/add")}>Add Product</Button>
         </div>
 
-        {products.length === 0 ? (
+        {loading ? (
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            {[0, 1, 2, 3].map((item) => (
+              <div key={item} className="overflow-hidden rounded-[1.5rem] border bg-card">
+                <div className="h-64 animate-pulse bg-muted" />
+                <div className="space-y-3 p-4">
+                  <div className="h-6 w-1/2 animate-pulse rounded bg-muted" />
+                  <div className="h-16 animate-pulse rounded bg-muted" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="mt-6">
+            <ErrorState
+              title="Products could not load"
+              description={error}
+              action={<Button onClick={() => window.location.reload()} size="sm">Retry</Button>}
+            />
+          </div>
+        ) : products.length === 0 ? (
           <div className="mt-6 rounded-[2rem] border bg-card p-8 text-center text-base text-muted-foreground">
             à¤…à¤­à¥€ à¤•à¥‹à¤ˆ product à¤¨à¤¹à¥€à¤‚ à¤¹à¥ˆà¥¤
           </div>
@@ -59,8 +80,14 @@ export default function ProductsPage() {
                     >
                       Share
                     </Button>
-                    <Button variant="outline" onClick={() => deleteProduct(product.id)}>
-                      Delete
+                    <Button
+                      disabled={mutationLoading}
+                      variant="outline"
+                      onClick={async () => {
+                        await deleteProduct(product.id);
+                      }}
+                    >
+                      {mutationLoading ? "Deleting..." : "Delete"}
                     </Button>
                   </div>
                 </div>

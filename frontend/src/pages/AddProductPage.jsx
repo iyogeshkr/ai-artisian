@@ -7,12 +7,14 @@ import { useArtisan } from "@/context/ArtisanContext";
 import { useDesigns } from "@/context/DesignContext";
 import { useProducts } from "@/context/ProductContext";
 import { compressImageFile } from "@/utils/imageProcessing";
+import { toast } from "@/components/ui/use-toast";
+import { logError } from "@/utils/logger";
 
 export default function AddProductPage() {
   const navigate = useNavigate();
   const { isOnboarded } = useArtisan();
   const { selectedDesign } = useDesigns();
-  const { addProduct, products } = useProducts();
+  const { addProduct, mutationLoading, products } = useProducts();
   const [form, setForm] = useState({
     description: "",
     name: "",
@@ -20,6 +22,7 @@ export default function AddProductPage() {
     price: "",
   });
   const [error, setError] = useState("");
+  const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
 
   if (!isOnboarded) {
     return <Navigate to="/artisan/onboarding" replace />;
@@ -40,18 +43,31 @@ export default function AddProductPage() {
       return;
     }
 
+    setIsProcessingPhoto(true);
     try {
       const compressedPhoto = await compressImageFile(file, {
         maxHeight: 1200,
         maxWidth: 1200,
       });
       updateField("photo", compressedPhoto);
-    } catch {
-      setError("Photo couldn't load, try again.");
+    } catch (photoError) {
+      logError("Product photo processing failed", photoError, {
+        fileSize: file.size,
+        fileType: file.type,
+      });
+      const message = "Photo couldn't load, try again.";
+      setError(message);
+      toast({ description: message, title: "Upload failed", variant: "destructive" });
+    } finally {
+      setIsProcessingPhoto(false);
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (mutationLoading || isProcessingPhoto) {
+      return;
+    }
+
     if (products.length >= 20) {
       setError("Free tier limit reached. You can add up to 20 products.");
       return;
@@ -62,13 +78,18 @@ export default function AddProductPage() {
       return;
     }
 
-    addProduct({
+    const result = await addProduct({
       description: form.description.trim(),
       name: form.name.trim(),
       photo: form.photo,
       price: Number(form.price),
     });
-    navigate("/products");
+
+    if (result.success) {
+      navigate("/products");
+    } else {
+      setError(result.error || "Product could not be saved.");
+    }
   };
 
   return (
@@ -93,11 +114,12 @@ export default function AddProductPage() {
             <div>
               <label className="mb-2 block text-base font-medium">Photo</label>
               <label className="flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-dashed px-4 py-4 text-base font-medium text-primary">
-                Upload product photo
-                <input accept="image/*" capture="environment" className="sr-only" type="file" onChange={handlePhotoChange} />
+                {isProcessingPhoto ? "Preparing photo..." : "Upload product photo"}
+                <input accept="image/*" capture="environment" className="sr-only" disabled={isProcessingPhoto || mutationLoading} type="file" onChange={handlePhotoChange} />
               </label>
             </div>
-            {form.photo ? (
+            {isProcessingPhoto ? <div className="h-72 w-full animate-pulse rounded-[1.5rem] bg-muted" /> : null}
+            {form.photo && !isProcessingPhoto ? (
               <img alt="Product preview" className="h-72 w-full rounded-[1.5rem] object-cover" src={form.photo} />
             ) : null}
             {error ? <p className="text-base font-medium text-destructive">{error}</p> : null}
@@ -105,7 +127,9 @@ export default function AddProductPage() {
               <Button variant="outline" onClick={() => navigate("/products")}>
                 Cancel
               </Button>
-              <Button onClick={handleSubmit}>Save Product</Button>
+              <Button onClick={handleSubmit} disabled={mutationLoading || isProcessingPhoto}>
+                {mutationLoading ? "Saving..." : "Save Product"}
+              </Button>
             </div>
           </div>
         </div>

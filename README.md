@@ -1,31 +1,21 @@
 # AI Artisan
 
-AI Artisan is a React storefront for traditional craft sellers, built around Supabase for auth and data, Supabase Edge Functions for server logic, and Hugging Face for image generation.
+AI Artisan is a React storefront for traditional craft sellers. The repository has been refactored to a Clerk-first architecture; see `docs/ARCHITECTURE.md` for the recommended production layout and migration steps.
 
-## Stack
+## Architecture & Deployment
 
-- Frontend hosting: Vercel or Netlify
-- Auth: Supabase Auth
-- Database: Supabase PostgreSQL
-- Server logic: Supabase Edge Functions
-- AI image generation: Hugging Face Inference API
+See `docs/ARCHITECTURE.md` for the target repo layout and `docs/DEPLOYMENT.md` for environment and deployment instructions.
 
-## Local development
-
-### Frontend
+## Local development (frontend)
 
 ```bash
 cd frontend
 npm install
-copy .env.example .env
+cp .env.example .env
 npm run dev
 ```
 
-The frontend uses the Supabase client to invoke Edge Functions, so there is no separate Firebase-style API base URL.
-
-### Supabase
-
-Use the Supabase dashboard and CLI to manage auth, database, and Edge Functions. The shared schema lives in `supabase/schema.sql`.
+The frontend uses Clerk for authentication and Supabase for database and storage (Clerk-first). The canonical Supabase schema is `supabase/clerk_schema.sql`.
 
 ## Image generation
 
@@ -33,6 +23,6 @@ The app uses Hugging Face's `black-forest-labs/FLUX.1-schnell` model behind Edge
 
 ## Notes
 
-- Frontend API calls now go through Supabase Edge Functions.
-- Supabase Auth tokens are attached automatically to authenticated requests.
+- Frontend API calls now go through the Express backend deployed on Railway.
+Clerk JWTs are attached to authenticated requests and verified by server-side code.
 - The old Firebase hosting/functions path is no longer the target deployment model.

@@ -146,7 +146,7 @@ This audit includes 4 comprehensive documents covering all aspects of the AI Art
 ---
 
 ### Issue #2: Profile Privacy Leak 🟡 HIGH
-**File**: `supabase/schema.sql` line ~155
+**File**: `supabase/clerk_schema.sql` line ~155
 
 - All users can see all profile data
 - Exposes emails, phone numbers, bios
@@ -323,7 +323,7 @@ This audit includes 4 comprehensive documents covering all aspects of the AI Art
 /SECURITY_REMEDIATION.md            <- Key rotation guide (2500+ words)
 /IMPLEMENTATION_GUIDE.md            <- Deployment procedures (3000+ words)
 /LAUNCH_READINESS.md               <- Executive summary (2000+ words)
-/supabase/schema.sql                <- Database schema (needs RLS fix)
+/supabase/clerk_schema.sql                <- Database schema (Clerk-first)
 /frontend/src/pages/DesignGeneratorPage.jsx  <- Rate limit UI (updated)
 /functions/.env                     <- ⚠️ SECRETS EXPOSED (needs rotation)
 /functions/.env.example             <- Safe template (keep as is)

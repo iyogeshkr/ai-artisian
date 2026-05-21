@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/config/supabase";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "@/components/ui/use-toast";
+import { logError } from "@/utils/logger";
 
 const DesignContext = createContext(null);
 
@@ -20,6 +22,8 @@ export function DesignProvider({ children }) {
   const [currentDesigns, setCurrentDesigns] = useState([]);
   const [selectedDesign, setSelectedDesign] = useState(null);
   const [generationHistory, setGenerationHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let isMounted = true;
@@ -30,18 +34,40 @@ export function DesignProvider({ children }) {
           setCurrentDesigns([]);
           setSelectedDesign(null);
           setGenerationHistory([]);
+          setLoading(false);
+          setError("");
         }
         return;
       }
 
-      const { data } = await supabase
-        .from("designs")
-        .select("*")
-        .eq("artisan_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(10);
+      setLoading(true);
+      setError("");
+      let data = [];
+      let loadError = null;
+
+      try {
+        const result = await supabase
+          .from("designs")
+          .select("*")
+          .eq("artisan_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(10);
+        data = result.data;
+        loadError = result.error;
+      } catch (requestError) {
+        loadError = requestError;
+      }
 
       if (!isMounted) {
+        return;
+      }
+
+      if (loadError) {
+        setError(loadError.message || "Design history could not load.");
+        setCurrentDesigns([]);
+        setGenerationHistory([]);
+        logError("Design history failed to load", loadError, { artisanId: user.id });
+        setLoading(false);
         return;
       }
 
@@ -49,6 +75,7 @@ export function DesignProvider({ children }) {
       setGenerationHistory(historyBatches);
       setCurrentDesigns(historyBatches[0] || []);
       setSelectedDesign(null);
+      setLoading(false);
     };
 
     loadDesigns();
@@ -68,7 +95,7 @@ export function DesignProvider({ children }) {
     const craftType = designData[0]?.craftType || "";
     const style = designData[0]?.style || "";
 
-    const { data: inserted } = await supabase
+    const { data: inserted, error: insertError } = await supabase
       .from("designs")
       .insert({
         artisan_id: user.id,
@@ -80,8 +107,8 @@ export function DesignProvider({ children }) {
       .select("id")
       .single();
 
-    if (!inserted?.id) {
-      return;
+    if (insertError || !inserted?.id) {
+      throw insertError || new Error("Design history insert did not return an id.");
     }
 
     const { data: allDesignRows } = await supabase
@@ -102,7 +129,9 @@ export function DesignProvider({ children }) {
   const value = useMemo(
     () => ({
       currentDesigns,
+      error,
       generationHistory,
+      loading,
       selectedDesign,
       selectDesign(design) {
         setSelectedDesign(design);
@@ -110,12 +139,24 @@ export function DesignProvider({ children }) {
       async setCurrentDesignBatch(designs) {
         setCurrentDesigns(designs);
         setGenerationHistory((current) => [designs, ...current].slice(0, 10));
-        await saveDesign(designs);
+        try {
+          await saveDesign(designs);
+        } catch (saveError) {
+          logError("Generated designs failed to persist", saveError, { artisanId: user?.id });
+          toast({
+            description: "The designs are visible now, but history could not be saved.",
+            title: "Design history not saved",
+            variant: "destructive",
+          });
+          throw saveError;
+        }
       },
     }),
     [
       currentDesigns,
+      error,
       generationHistory,
+      loading,
       selectedDesign,
       user?.id,
     ],

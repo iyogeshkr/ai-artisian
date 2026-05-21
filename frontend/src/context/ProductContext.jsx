@@ -2,6 +2,9 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from "
 import { supabase } from "@/config/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { useArtisan } from "@/context/ArtisanContext";
+import { toast } from "@/components/ui/use-toast";
+import { logError, logInfo } from "@/utils/logger";
+import { uploadProductImage } from "@/utils/storage";
 
 const ProductContext = createContext(null);
 
@@ -19,6 +22,7 @@ export function ProductProvider({ children }) {
   const { profile: artisanProfile } = useArtisan();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [mutationLoading, setMutationLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -36,11 +40,20 @@ export function ProductProvider({ children }) {
 
       setLoading(true);
       setError("");
-      const { data, error: fetchError } = await supabase
-        .from("products")
-        .select("*")
-        .eq("artisan_id", user.id)
-        .order("created_at", { ascending: false });
+      let data = [];
+      let fetchError = null;
+
+      try {
+        const result = await supabase
+          .from("products")
+          .select("*")
+          .eq("artisan_id", user.id)
+          .order("created_at", { ascending: false });
+        data = result.data;
+        fetchError = result.error;
+      } catch (loadError) {
+        fetchError = loadError;
+      }
 
       if (!isMounted) {
         return;
@@ -49,6 +62,7 @@ export function ProductProvider({ children }) {
       if (fetchError) {
         setProducts([]);
         setError(fetchError.message);
+        logError("Products failed to load", fetchError, { artisanId: user.id });
       } else {
         setProducts((data || []).map((row) => mapProductFromDb(row, artisanProfile?.storefrontId)));
       }
@@ -70,89 +84,165 @@ export function ProductProvider({ children }) {
           return { success: false, error: "You must be logged in to add products." };
         }
 
-        setError("");
-        const { data, error: insertError } = await supabase
-          .from("products")
-          .insert({
-            artisan_id: user.id,
-            artisan_name: artisanProfile?.name || "",
-            category: productData.category || "General",
-            description: productData.description || "",
-            image_url: productData.photo || productData.image_url || "",
-            name: productData.name,
-            price: Number(productData.price || 0),
-            region: artisanProfile?.region || "",
-            status: "active",
-          })
-          .select()
-          .single();
-
-        if (insertError) {
-          setError(insertError.message);
-          return { success: false, error: insertError.message };
+        if (mutationLoading) {
+          return { success: false, error: "A product save is already in progress." };
         }
 
-        setProducts((current) => [mapProductFromDb(data, artisanProfile?.storefrontId), ...current]);
-        return { success: true, error: null };
+        setMutationLoading(true);
+        setError("");
+
+        try {
+          const imageUrl = await uploadProductImage({
+            artisanId: user.id,
+            dataUrl: productData.photo || productData.image_url || "",
+          });
+          const { data, error: insertError } = await supabase
+            .from("products")
+            .insert({
+              ai_generated: Boolean(productData.aiGenerated),
+              artisan_id: user.id,
+              artisan_name: artisanProfile?.name || "",
+              category: productData.category || "General",
+              description: productData.description || "",
+              image_url: imageUrl,
+              name: productData.name,
+              price: Number(productData.price || 0),
+              region: artisanProfile?.region || "",
+              status: "active",
+            })
+            .select()
+            .single();
+
+          if (insertError) {
+            throw insertError;
+          }
+
+          setProducts((current) => [mapProductFromDb(data, artisanProfile?.storefrontId), ...current]);
+          logInfo("Product created", { artisanId: user.id, productId: data?.id });
+          toast({
+            description: "Your product is now live in your marketplace.",
+            title: "Product saved",
+          });
+          return { success: true, error: null };
+        } catch (saveError) {
+          const message = saveError.message || "Product could not be saved. Please try again.";
+          setError(message);
+          logError("Product creation failed", saveError, { artisanId: user.id });
+          toast({
+            description: message,
+            title: "Product save failed",
+            variant: "destructive",
+          });
+          return { success: false, error: message };
+        } finally {
+          setMutationLoading(false);
+        }
       },
       async deleteProduct(productId) {
         if (!user?.id) {
           return { success: false, error: "You must be logged in to delete products." };
         }
 
-        setError("");
-        const { error: deleteError } = await supabase.from("products").delete().eq("id", productId);
-
-        if (deleteError) {
-          setError(deleteError.message);
-          return { success: false, error: deleteError.message };
+        if (mutationLoading) {
+          return { success: false, error: "Another product action is already in progress." };
         }
 
-        setProducts((current) => current.filter((product) => product.id !== productId));
-        return { success: true, error: null };
+        setMutationLoading(true);
+        setError("");
+        try {
+          const { error: deleteError } = await supabase
+            .from("products")
+            .delete()
+            .eq("id", productId)
+            .eq("artisan_id", user.id);
+
+          if (deleteError) {
+            throw deleteError;
+          }
+
+          setProducts((current) => current.filter((product) => product.id !== productId));
+          toast({ description: "The listing was removed.", title: "Product deleted" });
+          return { success: true, error: null };
+        } catch (deleteError) {
+          const message = deleteError.message || "Product could not be deleted.";
+          setError(message);
+          logError("Product deletion failed", deleteError, { artisanId: user.id, productId });
+          toast({
+            description: message,
+            title: "Delete failed",
+            variant: "destructive",
+          });
+          return { success: false, error: message };
+        } finally {
+          setMutationLoading(false);
+        }
       },
       async updateProduct(productId, updates) {
         if (!user?.id) {
           return { success: false, error: "You must be logged in to update products." };
         }
 
-        const dbUpdates = { ...updates };
-        if ("photo" in dbUpdates) {
-          dbUpdates.image_url = dbUpdates.photo;
-          delete dbUpdates.photo;
+        if (mutationLoading) {
+          return { success: false, error: "Another product action is already in progress." };
         }
 
         setError("");
-        const { error: updateError } = await supabase
-          .from("products")
-          .update(dbUpdates)
-          .eq("id", productId);
+        setMutationLoading(true);
+        try {
+          const dbUpdates = { ...updates };
+          if ("photo" in dbUpdates) {
+            dbUpdates.image_url = await uploadProductImage({
+              artisanId: user.id,
+              dataUrl: dbUpdates.photo,
+            });
+            delete dbUpdates.photo;
+          }
 
-        if (updateError) {
-          setError(updateError.message);
-          return { success: false, error: updateError.message };
-        }
+          const { error: updateError } = await supabase
+            .from("products")
+            .update(dbUpdates)
+            .eq("id", productId)
+            .eq("artisan_id", user.id);
 
-        setProducts((current) => {
-          return current.map((product) => {
-            if (product.id !== productId) {
-              return product;
-            }
+          if (updateError) {
+            throw updateError;
+          }
 
-            return {
-              ...product,
-              ...updates,
-              photo: updates.photo || updates.image_url || product.photo,
-            };
+          setProducts((current) => {
+            return current.map((product) => {
+              if (product.id !== productId) {
+                return product;
+              }
+
+              return {
+                ...product,
+                ...updates,
+                photo: dbUpdates.image_url || updates.photo || updates.image_url || product.photo,
+              };
+            });
           });
-        });
-        return { success: true, error: null };
+          toast({ description: "Your product changes were saved.", title: "Product updated" });
+          return { success: true, error: null };
+        } catch (updateError) {
+          const message = updateError.message || "Product could not be updated.";
+          setError(message);
+          logError("Product update failed", updateError, { artisanId: user.id, productId });
+          toast({
+            description: message,
+            title: "Update failed",
+            variant: "destructive",
+          });
+          return { success: false, error: message };
+        } finally {
+          setMutationLoading(false);
+        }
       },
       error,
       loading,
+      mutationLoading,
       products,
     }),
-    [artisanProfile?.name, artisanProfile?.region, artisanProfile?.storefrontId, error, loading, products, user?.id],
+    [artisanProfile?.name, artisanProfile?.region, artisanProfile?.storefrontId, error, loading, mutationLoading, products, user?.id],
   );
 
   return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>;

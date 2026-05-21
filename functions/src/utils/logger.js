@@ -1,12 +1,10 @@
-import { logger as firebaseLogger } from "firebase-functions";
-
 /**
  * Writes an informational log entry.
  * @param {string} message
  * @param {object} [meta]
  */
 export function logInfo(message, meta = {}) {
-  firebaseLogger.info(message, meta);
+  console.info(message, meta);
 }
 
 /**
@@ -15,7 +13,7 @@ export function logInfo(message, meta = {}) {
  * @param {object} [meta]
  */
 export function logWarn(message, meta = {}) {
-  firebaseLogger.warn(message, meta);
+  console.warn(message, meta);
 }
 
 /**
@@ -24,5 +22,5 @@ export function logWarn(message, meta = {}) {
  * @param {object} [meta]
  */
 export function logError(message, meta = {}) {
-  firebaseLogger.error(message, meta);
+  console.error(message, meta);
 }

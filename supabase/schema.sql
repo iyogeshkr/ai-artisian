@@ -1,6 +1,9 @@
 ﻿-- AI Artisan launch schema
 -- Run in Supabase SQL editor or with: supabase db push
 
+-- DEPRECATED: do not deploy this Supabase-auth-first file.
+-- Production uses supabase/clerk_schema.sql.
+
 create extension if not exists pgcrypto;
 
 create type public.user_role as enum ('customer', 'artisan', 'admin');
@@ -171,10 +174,8 @@ begin
 end;
 $$;
 
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-after insert on auth.users
-for each row execute function public.handle_new_user();
+-- Deprecated: triggers and references to Supabase Auth (auth.users) removed in Clerk-first deployment.
+-- If you need this original behavior, see supabase/schema_deprecated.sql in the repo.
 
 alter table public.profiles enable row level security;
 alter table public.artisan_profiles enable row level security;

@@ -3,12 +3,12 @@
   "private": true,
   "scripts": {
     "dev": "npm --prefix frontend run dev",
-    "dev:functions": "npm --prefix functions run serve",
+    "dev:functions": "npm --prefix backend run serve",
     "build": "npm --prefix frontend run build",
-    "build:functions": "npm --prefix functions run lint",
+    "build:functions": "npm --prefix backend run lint",
     "preview": "npm --prefix frontend run preview",
     "lint": "npm --prefix frontend run lint",
-    "deploy": "echo Deploy frontend to Vercel or Netlify and Supabase Edge Functions separately"
+    "deploy": "node ./scripts/deploy_placeholder.js || echo 'See docs/DEPLOYMENT.md for deployment steps'"
   },
   "devDependencies": {
     "supabase": "^2.95.6"

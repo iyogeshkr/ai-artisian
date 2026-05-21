@@ -1,15 +1,3 @@
-import { onRequest } from "firebase-functions/v2/https";
-import app from "./app.js";
-import { FUNCTION_REGION, huggingFaceApiKeySecret } from "./config/env.js";
-
-export const api = onRequest(
-  {
-    cpu: 1,
-    memory: "512MiB",
-    minInstances: 0,
-    region: FUNCTION_REGION,
-    secrets: [huggingFaceApiKeySecret],
-    timeoutSeconds: 120,
-  },
-  app,
-);
+// Railway production uses backend/server.js, which delegates to src/server.js.
+// This export keeps import-based tooling stable without creating a duplicate API.
+export { default as app } from "./app.js";

@@ -35,6 +35,7 @@ const generateDesignRateLimiter = rateLimit({
 router.post(
   "/generate-image",
   generateImageRateLimiter,
+  requireAuth,
   validateGenerateImageRequest,
   generateImageController,
 );

@@ -1,5 +1,9 @@
 import app from "./app.js";
 import { logInfo } from "./utils/logger.js";
+import { getClerkSecretKey } from "./config/env.js";
+
+// Validate Clerk secret presence early to fail fast if misconfigured.
+getClerkSecretKey();
 
 const port = Number(process.env.PORT || 8000);
 

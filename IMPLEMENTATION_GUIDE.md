@@ -407,7 +407,7 @@ vercel logs --prod
 ## FILES MODIFIED
 
 ### Core Changes
-- ✅ `supabase/schema.sql` - Fixed RLS policy
+-- ✅ `supabase/clerk_schema.sql` - Fixed RLS policy (Clerk-first)
 - ✅ `frontend/src/pages/DesignGeneratorPage.jsx` - Rate limit UI + error messages
 - ✅ `frontend/src/components/ui/EmptyState.jsx` - New component
 - ✅ `SECURITY_REMEDIATION.md` - Security guide (new)

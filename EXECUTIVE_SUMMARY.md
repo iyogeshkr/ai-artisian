@@ -31,7 +31,7 @@ Overall Readiness:  █████░░░░░ 5.5/10→9/10 🟡→✅
 - **Impact**: MUST fix before going live
 
 ### 2. Profile Privacy Leak  
-- **Where**: `supabase/schema.sql` line 155
+- **Where**: `supabase/clerk_schema.sql` line 155
 - **Risk**: Users see each other's private data (emails, phones)
 - **Fix**: Change RLS policy (5 min)
 - **Impact**: User privacy violation
