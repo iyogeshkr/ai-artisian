@@ -29,8 +29,20 @@ export default function SignupPage() {
     };
   }, [intent]);
 
-  if (!loading && user) {
-    return <Navigate to={getDashboardPath(user.role || "user", user.isOnboarded)} replace />;
+  const signedInRedirectPath = useMemo(() => {
+    if (!user) {
+      return null;
+    }
+
+    if (intent === "artisan" && user.role === "user") {
+      return "/artisan/onboarding";
+    }
+
+    return getDashboardPath(user.role || "user", user.isOnboarded);
+  }, [intent, user]);
+
+  if (!loading && signedInRedirectPath) {
+    return <Navigate to={signedInRedirectPath} replace />;
   }
 
   const RoleIcon = roleConfig.icon;

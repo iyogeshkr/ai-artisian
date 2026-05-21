@@ -44,20 +44,20 @@ export default function OnboardingWizard({ onComplete }) {
   const validateStep = () => {
     if (step === 1) {
       if (!form.name.trim()) {
-        return "à¤…à¤ªà¤¨à¤¾ à¤¨à¤¾à¤® à¤­à¤°à¥‡à¤‚à¥¤";
+        return "Please enter your name.";
       }
 
       if (normalizePhoneNumber(form.phone).length !== 10) {
-        return "10 à¤…à¤‚à¤•à¥‹à¤‚ à¤•à¤¾ WhatsApp à¤¨à¤‚à¤¬à¤° à¤¦à¤°à¥à¤œ à¤•à¤°à¥‡à¤‚à¥¤";
+        return "Please enter a valid 10-digit WhatsApp number.";
       }
     }
 
     if (step === 2 && !form.craftType) {
-      return "à¤…à¤ªà¤¨à¤¾ craft à¤šà¥à¤¨à¥‡à¤‚à¥¤";
+      return "Please choose your craft type.";
     }
 
     if (step === 3 && !form.region) {
-      return "à¤…à¤ªà¤¨à¤¾ à¤°à¤¾à¤œà¥à¤¯ à¤¯à¤¾ à¤•à¥‡à¤‚à¤¦à¥à¤° à¤¶à¤¾à¤¸à¤¿à¤¤ à¤ªà¥à¤°à¤¦à¥‡à¤¶ à¤šà¥à¤¨à¥‡à¤‚à¥¤";
+      return "Please choose your state or union territory.";
     }
 
     return "";
@@ -93,7 +93,7 @@ export default function OnboardingWizard({ onComplete }) {
       });
       updateField("samplePhoto", compressedPhoto);
     } catch {
-      setError("à¤«à¥‹à¤Ÿà¥‹ à¤…à¤ªà¤²à¥‹à¤¡ à¤¨à¤¹à¥€à¤‚ à¤¹à¥‹ à¤¸à¤•à¥€à¥¤ à¤•à¥ƒà¤ªà¤¯à¤¾ à¤«à¤¿à¤° à¤¸à¥‡ à¤•à¥‹à¤¶à¤¿à¤¶ à¤•à¤°à¥‡à¤‚à¥¤");
+      setError("Photo upload failed. Please try again.");
     }
   };
 
@@ -219,9 +219,9 @@ export default function OnboardingWizard({ onComplete }) {
           <p className="mb-2 inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
             Artisan Onboarding
           </p>
-          <h1 className="text-3xl font-bold text-foreground">AI Artisan à¤®à¥‡à¤‚ à¤¸à¥à¤µà¤¾à¤—à¤¤ à¤¹à¥ˆ</h1>
+          <h1 className="text-3xl font-bold text-foreground">Welcome to AI Artisan</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            à¤¬à¤¸ 4 à¤›à¥‹à¤Ÿà¥‡ à¤•à¤¦à¤®. à¤«à¤¿à¤° à¤†à¤ªà¤•à¤¾ dashboard, design tools à¤”à¤° storefront à¤¤à¥ˆà¤¯à¤¾à¤°à¥¤
+            Just 4 short steps. Then your dashboard, design tools, and storefront are ready.
           </p>
         </div>
         <div className="rounded-2xl bg-muted px-4 py-3 text-right">
@@ -252,20 +252,20 @@ export default function OnboardingWizard({ onComplete }) {
       {step === 1 ? (
         <div className="space-y-5">
           <div>
-            <label className="mb-2 block text-sm font-medium">à¤†à¤ªà¤•à¤¾ à¤¨à¤¾à¤®</label>
+            <label className="mb-2 block text-sm font-medium">Your name</label>
             <Input
               value={form.name}
               onChange={(event) => updateField("name", event.target.value)}
-              placeholder="à¤œà¥ˆà¤¸à¥‡: Sita Devi"
+              placeholder="Example: Sita Devi"
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium">WhatsApp à¤¨à¤‚à¤¬à¤°</label>
+            <label className="mb-2 block text-sm font-medium">WhatsApp number</label>
             <Input
               inputMode="numeric"
               maxLength={10}
               pattern="[0-9]*"
-              placeholder="10 à¤…à¤‚à¤•à¥‹à¤‚ à¤•à¤¾ à¤¨à¤‚à¤¬à¤°"
+              placeholder="10-digit number"
               value={form.phone}
               onChange={(event) =>
                 updateField("phone", event.target.value.replace(/\D/g, "").slice(0, 10))
@@ -273,7 +273,7 @@ export default function OnboardingWizard({ onComplete }) {
             />
           </div>
           <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
-            à¤¯à¤¹à¥€ à¤¨à¤‚à¤¬à¤° à¤†à¤ªà¤•à¥€ à¤ªà¤¹à¤šà¤¾à¤¨ à¤”à¤° WhatsApp orders à¤•à¥‡ à¤²à¤¿à¤ à¤‡à¤¸à¥à¤¤à¥‡à¤®à¤¾à¤² à¤¹à¥‹à¤—à¤¾à¥¤
+            We use this number for identity verification and WhatsApp orders.
           </div>
         </div>
       ) : null}
@@ -281,8 +281,8 @@ export default function OnboardingWizard({ onComplete }) {
       {step === 2 ? (
         <div className="space-y-4">
           <div>
-            <h2 className="text-lg font-semibold">à¤†à¤ª à¤•à¤¿à¤¸ craft à¤®à¥‡à¤‚ à¤•à¤¾à¤® à¤•à¤°à¤¤à¥‡ à¤¹à¥ˆà¤‚?</h2>
-            <p className="text-sm text-muted-foreground">à¤®à¥‹à¤¬à¤¾à¤‡à¤² à¤ªà¤° à¤¬à¤¡à¤¼à¥‡ icon tiles à¤¸à¥‡ à¤šà¥à¤¨à¥‡à¤‚à¥¤</p>
+            <h2 className="text-lg font-semibold">What craft do you work in?</h2>
+            <p className="text-sm text-muted-foreground">Choose from the large icon tiles below.</p>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {ONBOARDING_CRAFT_TYPES.map((craft) => {
@@ -311,12 +311,12 @@ export default function OnboardingWizard({ onComplete }) {
       {step === 3 ? (
         <div className="space-y-4">
           <div>
-            <h2 className="text-lg font-semibold">à¤†à¤ª à¤•à¤¿à¤¸ à¤°à¤¾à¤œà¥à¤¯ à¤¸à¥‡ à¤¹à¥ˆà¤‚?</h2>
-            <p className="text-sm text-muted-foreground">à¤‡à¤¸à¤¸à¥‡ storefront à¤”à¤° à¤¸à¥€à¤–à¤¨à¥‡ à¤•à¥€ à¤¸à¤¾à¤®à¤—à¥à¤°à¥€ à¤¬à¥‡à¤¹à¤¤à¤° à¤¹à¥‹à¤—à¥€à¥¤</p>
+            <h2 className="text-lg font-semibold">Which state are you from?</h2>
+            <p className="text-sm text-muted-foreground">This helps tailor your storefront and learning content.</p>
           </div>
           <Select value={form.region} onValueChange={(value) => updateField("region", value)}>
             <SelectTrigger className="h-12">
-              <SelectValue placeholder="à¤°à¤¾à¤œà¥à¤¯ / UT à¤šà¥à¤¨à¥‡à¤‚" />
+              <SelectValue placeholder="Choose your state / UT" />
             </SelectTrigger>
             <SelectContent>
               {INDIAN_STATES_AND_UTS.map((item) => (
@@ -332,13 +332,13 @@ export default function OnboardingWizard({ onComplete }) {
       {step === 4 ? (
         <div className="space-y-5">
           <div>
-            <h2 className="text-lg font-semibold">à¤…à¤ªà¤¨à¥‡ à¤®à¥Œà¤œà¥‚à¤¦à¤¾ à¤ªà¥à¤°à¥‹à¤¡à¤•à¥à¤Ÿ à¤•à¥€ à¤«à¥‹à¤Ÿà¥‹ à¤œà¥‹à¤¡à¤¼à¥‡à¤‚</h2>
-            <p className="text-sm text-muted-foreground">à¤¯à¤¹ à¤µà¥ˆà¤•à¤²à¥à¤ªà¤¿à¤• à¤¹à¥ˆ. à¤•à¥ˆà¤®à¤°à¤¾ capture à¤®à¥‹à¤¬à¤¾à¤‡à¤² à¤ªà¤° à¤ªà¥à¤°à¤¾à¤¥à¤®à¤¿à¤• à¤°à¤¹à¥‡à¤—à¤¾à¥¤</p>
+            <h2 className="text-lg font-semibold">Add a photo of one of your products</h2>
+            <p className="text-sm text-muted-foreground">Optional. Camera capture is enabled for mobile.</p>
           </div>
           <label className="flex cursor-pointer flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-primary/30 bg-primary/5 px-6 py-10 text-center">
             <Camera className="mb-3 h-10 w-10 text-primary" />
-            <span className="font-medium">à¤«à¥‹à¤Ÿà¥‹ à¤…à¤ªà¤²à¥‹à¤¡ à¤•à¤°à¥‡à¤‚</span>
-            <span className="mt-1 text-sm text-muted-foreground">Tap à¤•à¤°à¤•à¥‡ à¤•à¥ˆà¤®à¤°à¤¾ à¤¯à¤¾ gallery à¤–à¥‹à¤²à¥‡à¤‚</span>
+            <span className="font-medium">Upload a photo</span>
+            <span className="mt-1 text-sm text-muted-foreground">Tap to open your camera or gallery</span>
             <input
               accept="image/*"
               capture="environment"
@@ -358,7 +358,7 @@ export default function OnboardingWizard({ onComplete }) {
           ) : (
             <Textarea
               disabled
-              value="à¤«à¥‹à¤Ÿà¥‹ à¤…à¤­à¥€ à¤¨ à¤œà¥‹à¤¡à¤¼à¥‡à¤‚ à¤¤à¥‹ à¤­à¥€ à¤šà¤²à¥‡à¤—à¤¾. à¤†à¤ª à¤¬à¤¾à¤¦ à¤®à¥‡à¤‚ dashboard à¤¸à¥‡ à¤­à¥€ products à¤œà¥‹à¤¡à¤¼ à¤¸à¤•à¤¤à¥‡ à¤¹à¥ˆà¤‚à¥¤"
+              value="You can skip this for now. You can add products later from the dashboard."
             />
           )}
         </div>
@@ -369,18 +369,18 @@ export default function OnboardingWizard({ onComplete }) {
       <div className="mt-8 flex items-center justify-between gap-3">
         <Button type="button" variant="outline" onClick={handleBack} disabled={step === 1 || isSaving} className="min-h-[48px]">
           <ChevronLeft className="mr-2 h-4 w-4" />
-          à¤ªà¤¿à¤›à¤²à¤¾
+          Back
         </Button>
 
         {step < TOTAL_STEPS ? (
           <Button type="button" onClick={handleNext} className="min-h-[48px]">
-            à¤…à¤—à¤²à¤¾
+            Next
             <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         ) : (
           <Button type="button" onClick={handleSubmit} disabled={isSaving} className="min-h-[48px] w-full sm:w-auto">
             <CheckCircle2 className="mr-2 h-4 w-4" />
-            {isSaving ? "Saving..." : "Launch My Store ðŸš€"}
+            {isSaving ? "Saving..." : "Launch My Store"}
           </Button>
         )}
       </div>
