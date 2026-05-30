@@ -64,7 +64,7 @@ function AppShell() {
             <Route path="/artisan/onboarding" element={<ProtectedRoute roles={["user", "artisan"]}><OnboardPage /></ProtectedRoute>} />
             <Route path="/artisan/dashboard" element={<ProtectedRoute roles="artisan" requireOnboarded><ErrorBoundary><DashboardPage /></ErrorBoundary></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute roles="admin"><AdminDashboardPage /></ProtectedRoute>} />
-            <Route path="/design" element={<ProtectedRoute roles="artisan" requireOnboarded><ErrorBoundary><DesignGeneratorPage /></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/design" element={<ProtectedRoute roles={["user", "artisan"]}><ErrorBoundary><DesignGeneratorPage /></ErrorBoundary></ProtectedRoute>} />
             <Route path="/products" element={<ProtectedRoute roles="artisan" requireOnboarded><ProductsPage /></ProtectedRoute>} />
             <Route path="/products/add" element={<ProtectedRoute roles="artisan" requireOnboarded><AddProductPage /></ProtectedRoute>} />
             <Route path="/product/:id" element={<ProductDetailPage />} />

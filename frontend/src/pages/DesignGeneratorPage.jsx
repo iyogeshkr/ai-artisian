@@ -1,6 +1,6 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Palette, Share2 } from "lucide-react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import MobileBottomNav from "@/components/artisan/MobileBottomNav";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -57,8 +57,7 @@ function ImageFallback({ alt, className, src }) {
 }
 
 export default function DesignGeneratorPage() {
-  const navigate = useNavigate();
-  const { isOnboarded, profile } = useArtisan();
+  const { profile } = useArtisan();
   const { currentDesigns, selectedDesign, selectDesign, setCurrentDesignBatch } = useDesigns();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
@@ -100,10 +99,6 @@ export default function DesignGeneratorPage() {
       activeRequestId.current += 1;
     };
   }, []);
-
-  if (!isOnboarded) {
-    return <Navigate to="/artisan/onboarding" replace />;
-  }
 
   const canGoNext =
     step === 1
@@ -350,8 +345,8 @@ export default function DesignGeneratorPage() {
         <section className="mt-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-2xl font-bold">Results</h2>
-            <Link className="text-base font-medium text-primary" to="/artisan/dashboard">
-              Back to dashboard
+            <Link className="text-base font-medium text-primary" to="/">
+              Back to home
             </Link>
           </div>
           {isGenerating ? (
@@ -398,8 +393,8 @@ export default function DesignGeneratorPage() {
                 </p>
                 <h2 className="mt-4 text-3xl font-bold">Use this design for your product</h2>
                 <p className="mt-3 text-base text-muted-foreground">{selectedDesign.prompt}</p>
-                <Button className="mt-6" onClick={() => navigate("/products/add")}>
-                  Use This Design
+                <Button className="mt-6" onClick={() => shareSelectedDesign(selectedDesign)}>
+                  Share This Design
                 </Button>
               </div>
             </div>

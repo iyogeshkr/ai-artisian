@@ -144,11 +144,10 @@ export function DesignProvider({ children }) {
         } catch (saveError) {
           logError("Generated designs failed to persist", saveError, { artisanId: user?.id });
           toast({
-            description: "The designs are visible now, but history could not be saved.",
+            description: "The designs are visible now. History save was skipped.",
             title: "Design history not saved",
             variant: "destructive",
           });
-          throw saveError;
         }
       },
     }),

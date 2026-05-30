@@ -41,7 +41,6 @@ router.post(
 );
 router.post(
   "/generate-design",
-  requireAuth,
   generateDesignRateLimiter,
   validateGenerateDesignRequest,
   generateDesignController,

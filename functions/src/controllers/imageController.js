@@ -53,10 +53,11 @@ export async function generateDesignController(req, res, next) {
   try {
     const prompts = buildDesignPromptVariants(req.validatedBody);
     const result = await generateDesignVariants(prompts);
+    const userId = req.user?.id || "demo";
     const designs = await Promise.all(
-      result.designs.map((design) => attachStorageUrlToDesign(design, req.user.id)),
+      result.designs.map((design) => attachStorageUrlToDesign(design, userId)),
     );
-    logInfo("Design generated", { userId: req.user.id });
+    logInfo("Design generated", { userId });
     return res.status(200).json({
       ...result,
       designs,
