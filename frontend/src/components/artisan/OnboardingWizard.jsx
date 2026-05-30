@@ -7,7 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/config/supabase";
 import { ONBOARDING_CRAFT_TYPES, INDIAN_STATES_AND_UTS } from "@/data/artisanData";
 import { apiRequest } from "@/services/apiClient";
 import { compressImageFile } from "@/utils/imageProcessing";
@@ -129,59 +128,22 @@ export default function OnboardingWizard({ onComplete }) {
         return;
       }
 
-      // Check slug uniqueness
-      const { data: existing } = await supabase
-        .from("profiles")
-        .select("clerk_user_id")
-        .eq("store_slug", slug)
-        .neq("clerk_user_id", user.id)
-        .maybeSingle();
+      await apiRequest("/auth/become-artisan", {
+        body: JSON.stringify({
+          onboarding: {
+            craftType: form.craftType,
+            name: form.name.trim(),
+            phone: form.phone,
+            region: form.region,
+            samplePhoto: form.samplePhoto || "",
+            store_slug: slug,
+          },
+        }),
+        method: "POST",
+      });
 
-      if (existing) {
-        toast({
-          title: "Store name taken",
-          description: "Please choose a different name",
-          variant: "destructive",
-        });
-        setIsSaving(false);
-        return;
-      }
-
-      await apiRequest("/auth/become-artisan", { method: "POST" });
-
-      // Refresh Clerk before any Supabase writes so the session picks up the new artisan role.
+      // Refresh Clerk so route guards pick up the new artisan role immediately.
       await refreshUser?.();
-
-      // Save onboarding details after Clerk role metadata is synced by the backend.
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({
-          full_name: form.name.trim(),
-          name: form.name.trim(),
-          phone: normalizePhoneNumber(form.phone),
-          craft_type: form.craftType,
-          region: form.region,
-          artisan_status: "pending",
-          store_slug: slug,
-          store_setup: true,
-          profile_photo: form.samplePhoto || null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("clerk_user_id", user.id);
-
-      if (updateError) throw updateError;
-
-      const { error: storeError } = await supabase.from("stores").upsert({
-        artisan_id: user.id,
-        name: form.name.trim(),
-        slug,
-        description: `${form.craftType} artisan from ${form.region}`,
-        status: "pending",
-      }, { onConflict: "artisan_id" });
-
-      if (storeError && storeError.code !== "42P01") {
-        throw storeError;
-      }
 
       // Call onComplete callback if provided
       if (onComplete) {
@@ -388,4 +350,3 @@ export default function OnboardingWizard({ onComplete }) {
     </div>
   );
 }
-
