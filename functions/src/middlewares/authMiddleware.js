@@ -1,4 +1,4 @@
-import { clerkClient } from "@clerk/express";
+import { authenticateRequest, clerkClient } from "@clerk/express";
 import { getClerkAuthenticateOptions } from "../config/env.js";
 import { isRoleAllowed, normalizeRole } from "../utils/roles.js";
 
@@ -46,7 +46,11 @@ export async function requireAuth(req, res, next) {
     // Helpful debug: log that we're attempting to authenticate and which origin/token prefix arrived
     const redacted = redactToken(req.headers.authorization);
     console.debug("Auth middleware: authenticateRequest attempt. origin=", req.headers.origin, "authorization(redacted)=", redacted);
-    const requestState = await clerkClient.authenticateRequest(req, getClerkAuthenticateOptions());
+    const requestState = await authenticateRequest({
+      clerkClient,
+      request: req,
+      options: getClerkAuthenticateOptions(),
+    });
 
     if (!requestState.isAuthenticated) {
       const message = requestState.message || requestState.reason || "Authentication token is invalid.";
